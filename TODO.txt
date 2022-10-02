@@ -1,0 +1,10 @@
+-Create VGG19 encoder, in a class, inherit from an Encoder class
+-Create VGG19 decoder, in a class, inherit from a Decoder class
+-(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
+-Create MCC layer, in a class
+-Create Gaussian Noise (function or class)
+-Create Architecture, in a class, handling the entire pipeline
+-Define loss functions and train step
+-Download datasets
+-Create Generator
+-Create video inference

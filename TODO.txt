@@ -1,6 +1,7 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
--Define train step
+-Define learning rate
 -Freeze weights Encoder
+-Save/load weights
 -Download datasets
 -Preprocess input according to VGG
 -Create Generator

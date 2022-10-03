@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras import layers, Model
+from tensorflow.keras import layers, metrics, Model
 
 from src.architecture.layers.gaussian_noise_layer import GaussianNoiseLayer
 from src.architecture.layers.mcc_layer import MultiChannelCorrelationLayer
@@ -9,13 +9,15 @@ from src.architecture.layers.losses.mse_loss import MSELossLayer
 from src.architecture.layers.losses.mse_loss import ContentLossLayer
 from src.architecture.layers.losses.mse_loss import StyleLossLayer
 
+from src.architecture.config import *
+
 class VSTNetwork(Model):
 
-    def __init__(self, autoencoder_type):
+    def __init__(self, backbone_type):
 
         super(VSTNetwork, self).__init__()
 
-        self.encoder, self.decoder = build_autoencoder(autoencoder_type)
+        self.encoder, self.decoder = build_autoencoder(backbone_type)
 
         self.norm_layer = layers.Normalization()
         self.gaussian_noise_layer = GaussianNoiseLayer()
@@ -24,6 +26,8 @@ class VSTNetwork(Model):
         self.mse_loss_layer = MSELossLayer()
         self.content_loss_layer = ContentLossLayer()
         self.style_loss_layer = StyleLossLayer()
+
+        self.total_loss_tracker = metrics.Mean(name="loss")
 
     @tf.function
     def get_encoded_shapes(self, features):
@@ -104,3 +108,34 @@ class VSTNetwork(Model):
             identity_loss = self.mse_loss_layer([content, cont_cont]) + self.mse_loss_layer([style, styl_styl])
 
             return styl_cont, content_loss, style_loss, noise_loss, identity_loss
+
+    @tf.function
+    def train_step(self, inputs):
+
+        with tf.GradientTape() as tape:
+            styl_cont, content_loss, style_loss, noise_loss, identity_loss = self(inputs, training=True)
+
+            loss = content_loss * WEIGHT_CONTENT + \
+                style_loss * WEIGHT_STYLE + \
+                identity_loss * WEIGHT_IDENTITY + \
+                noise_loss * WEIGHT_NOISE
+
+        grads = tape.gradient(loss, self.trainable_weights)
+        self.optimizer.apply_gradients(zip(grads, self.trainable_weights))
+
+        self.total_loss_tracker.update_state(loss)
+
+        return {
+            "loss": self.total_loss_tracker.result(),
+        }
+
+def build_model(backbone_type,verbose=True):
+
+    model = VSTNetwork(backbone_type)
+
+    model.compile(OPTiMIZER)
+
+    if verbose:
+        model.summary()
+
+    return model

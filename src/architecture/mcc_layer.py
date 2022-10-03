@@ -5,6 +5,8 @@ class MultiChannelCorrelationLayer(layers.Layer):
 
     def __init__(self, input_filters, input_w, input_h):
 
+        super(MultiChannelCorrelationLayer, self).__init__()
+
         self.c = input_filters #Channels
         self.w = input_w #Width
         self.h = input_h #Height

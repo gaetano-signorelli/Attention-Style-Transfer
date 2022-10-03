@@ -29,6 +29,17 @@ class VSTNetwork(Model):
 
         self.total_loss_tracker = metrics.Mean(name="loss")
 
+        self.mcc_weights = None
+
+    def set_network_weights(self, decoder_weights, mcc_weights):
+
+        self.decoder.set_weights(decoder_weights)
+        self.mcc_weights = mcc_weights
+
+    def get_network_weights(self):
+
+        return self.decoder.get_weights(), self.mcc_layer.get_weights()
+
     @tf.function
     def get_encoded_shapes(self, features):
 
@@ -46,6 +57,10 @@ class VSTNetwork(Model):
         if self.mcc_layer is None:
             encoded_h, encoded_w, encoded_c = self.get_encoded_shapes(encoded_content)
             self.mcc_layer = MultiChannelCorrelationLayer(encoded_h, encoded_w, encoded_c)
+
+            if self.mcc_weights is not None:
+                self.mcc_layer.set_weights(self.mcc_weights)
+                self.mcc_weights = None
 
     @tf.function
     def reconstruct_and_extract(self, encoded_content, encoded_style):

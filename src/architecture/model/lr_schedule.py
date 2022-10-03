@@ -8,10 +8,12 @@ class AdaptiveLearningRate(LearningRateSchedule):
         self.lr_decay = lr_decay
         self.current_step = current_step
 
+    def update_current_step(self):
+
+        self.current_step += 1
+
     def __call__(self, step):
 
         new_learning_rate = self.initial_learning_rate / (1.0 + self.lr_decay * self.current_step)
-
-        self.current_step += 1
 
         return new_learning_rate

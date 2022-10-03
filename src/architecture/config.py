@@ -1,20 +1,30 @@
-from tensorflow.keras.optimizers import Adam
+import os
 
 from src.architecture.autoencoder.backbones import Backbones
-from src.architecture.model.lr_schedule import AdaptiveLearningRate
 
+#Backbone
 BACKBONE_TYPE = Backbones.VGG19
 
+#Loss weights
 WEIGHT_CONTENT = 4
 WEIGHT_STYLE = 15
 WEIGHT_IDENTITY = 70
 WEIGHT_NOISE = 3000
 
+#Optimization
 LEARNING_RATE = 1e-4
 LR_DECAY = 5e-5
-CURRENT_STEP = 0
-adapative_lr = AdaptiveLearningRate(LEARNING_RATE, LR_DECAY, CURRENT_STEP)
-OPTIMIZER = Adam(learning_rate=adapative_lr)
 
+#Training
 TRAIN_STEPS = 160000
 BATCH_SIZE = 8
+
+#Saving/Loading
+SAVE_MODEL = True
+LOAD_MODEL = True
+STEPS_BEFORE_SAVE = 10000
+
+#Paths
+WEIGHTS_PATH = os.path.join("weights",BACKBONE_TYPE)
+DECODER_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"decoder_{}.npy")
+MCC_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"mcc_{}.npy")

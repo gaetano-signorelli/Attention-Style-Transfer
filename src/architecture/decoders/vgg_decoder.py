@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
 
 from src.architecture.decoders.decoder_interface import Decoder

@@ -1,7 +1,6 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
--Create Gaussian Noise (function or class)
--Create Architecture, in a class, handling the entire pipeline
 -Define loss functions and train step
+-Freeze weights Encoder
 -Download datasets
 -Preprocess input according to VGG
 -Create Generator

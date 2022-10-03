@@ -10,7 +10,7 @@ class GaussianNoiseLayer(layers.Layer):
     @tf.function
     def call(self, x):
 
-        std = tf.random.uniform(shape=(1), minval=0.01, maxval=0.02)
+        std = tf.random.uniform(shape=(), minval=0.01, maxval=0.02)
         input_shape = tf.shape(x)
 
         gaussian_noise = tf.random.normal(input_shape, mean=0.0, stddev=std)

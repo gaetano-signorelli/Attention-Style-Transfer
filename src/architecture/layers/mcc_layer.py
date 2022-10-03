@@ -3,7 +3,7 @@ from tensorflow.keras import layers
 
 class MultiChannelCorrelationLayer(layers.Layer):
 
-    def __init__(self, input_filters, input_w, input_h):
+    def __init__(self, input_h, input_w, input_filters):
 
         super(MultiChannelCorrelationLayer, self).__init__()
 

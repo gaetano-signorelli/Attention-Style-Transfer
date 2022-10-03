@@ -133,7 +133,7 @@ def build_model(backbone_type,verbose=True):
 
     model = VSTNetwork(backbone_type)
 
-    model.compile(OPTiMIZER)
+    model.compile(OPTIMIZER)
 
     if verbose:
         model.summary()

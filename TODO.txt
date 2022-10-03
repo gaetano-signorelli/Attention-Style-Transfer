@@ -1,8 +1,8 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
--Define learning rate
 -Freeze weights Encoder
--Save/load weights
+-Save/load weights (only decoder and MCC) & Save some results & Save current step (last parameters)
 -Download datasets
 -Preprocess input according to VGG
--Create Generator
+-Create Generator (+Resize e Crop)
+-Train
 -Create video inference

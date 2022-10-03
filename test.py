@@ -1,5 +1,5 @@
-from src.architecture.encoders.vgg_encoder import EncoderVGG
-from src.architecture.decoders.vgg_decoder import DecoderVGG
+from src.architecture.autoencoder.encoders.vgg_encoder import EncoderVGG
+from src.architecture.autoencoder.decoders.vgg_decoder import DecoderVGG
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers

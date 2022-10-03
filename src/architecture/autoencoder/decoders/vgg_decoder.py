@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-from src.architecture.decoders.decoder_interface import Decoder
+from src.architecture.autoencoder.decoders.decoder_interface import Decoder
 from src.architecture.autoencoder.backbones import Backbones
 
 class DecoderVGG(Decoder):

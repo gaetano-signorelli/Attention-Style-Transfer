@@ -3,7 +3,7 @@ from tensorflow.keras import layers, metrics, Model
 
 from src.architecture.layers.gaussian_noise_layer import GaussianNoiseLayer
 from src.architecture.layers.mcc_layer import MultiChannelCorrelationLayer
-from src.architecture.autoencoder.builder import build_autoencoder
+from src.architecture.autoencoder.autoencoder_builder import build_autoencoder
 
 from src.architecture.layers.losses.mse_loss import MSELossLayer
 from src.architecture.layers.losses.mse_loss import ContentLossLayer
@@ -128,14 +128,3 @@ class VSTNetwork(Model):
         return {
             "loss": self.total_loss_tracker.result(),
         }
-
-def build_model(backbone_type,verbose=True):
-
-    model = VSTNetwork(backbone_type)
-
-    model.compile(OPTIMIZER)
-
-    if verbose:
-        model.summary()
-
-    return model

@@ -1,5 +1,5 @@
-from src.architecture.encoders.vgg_encoder import EncoderVGG
-from src.architecture.decoders.vgg_decoder import DecoderVGG
+from src.architecture.autoencoder.encoders.vgg_encoder import EncoderVGG
+from src.architecture.autoencoder.decoders.vgg_decoder import DecoderVGG
 from src.architecture.autoencoder.backbones import Backbones
 
 def build_autoencoder(type):

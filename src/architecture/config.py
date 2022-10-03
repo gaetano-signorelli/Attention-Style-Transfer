@@ -1,7 +1,7 @@
 from tensorflow.keras.optimizers import Adam
 
 from src.architecture.autoencoder.backbones import Backbones
-from src.architecture.lr_schedule import AdaptiveLearningRate
+from src.architecture.model.lr_schedule import AdaptiveLearningRate
 
 BACKBONE_TYPE = Backbones.VGG19
 

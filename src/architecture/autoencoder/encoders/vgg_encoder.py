@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from src.architecture.encoders.encoder_interface import Encoder
+from src.architecture.autoencoder.encoders.encoder_interface import Encoder
 from src.architecture.autoencoder.backbones import Backbones
 
 class EncoderVGG(Encoder):

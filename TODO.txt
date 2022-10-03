@@ -6,3 +6,4 @@
 -Train
 -Create video inference
 -Add comments
+-Remove pycache

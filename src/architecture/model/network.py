@@ -130,10 +130,12 @@ class VSTNetwork(Model):
         with tf.GradientTape() as tape:
             styl_cont, content_loss, style_loss, noise_loss, identity_loss = self(inputs, training=True)
 
-            loss = content_loss * WEIGHT_CONTENT + \
-                style_loss * WEIGHT_STYLE + \
-                identity_loss * WEIGHT_IDENTITY + \
-                noise_loss * WEIGHT_NOISE
+            total_loss = content_loss * WEIGHT_CONTENT + \
+                        style_loss * WEIGHT_STYLE + \
+                        identity_loss * WEIGHT_IDENTITY + \
+                        noise_loss * WEIGHT_NOISE
+
+            loss = tf.math.reduce_mean(total_loss)
 
         grads = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))

@@ -25,7 +25,7 @@ class Generator(keras.utils.Sequence):
         content_batch = self.get_random_batch(self.content_images)
         style_batch = self.get_random_batch(self.style_images)
 
-        return [content_batch, style_batch]
+        return content_batch, style_batch
 
     def __len__(self):
 

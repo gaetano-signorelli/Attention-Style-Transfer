@@ -125,7 +125,10 @@ class VSTNetwork(Model):
             return styl_cont, content_loss, style_loss, noise_loss, identity_loss
 
     @tf.function
-    def train_step(self, inputs):
+    def train_step(self, data):
+
+        content, style = data
+        inputs = [content, style]
 
         with tf.GradientTape() as tape:
             styl_cont, content_loss, style_loss, noise_loss, identity_loss = self(inputs, training=True)

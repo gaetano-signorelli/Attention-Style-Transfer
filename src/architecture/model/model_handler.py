@@ -65,10 +65,10 @@ class ModelHandler:
         for file in weights_files:
 
             if pattern_decoder_weights.match(file) and decoder_weights is None:
-                decoder_weights = file
+                decoder_weights = os.path.join(WEIGHTS_PATH, file)
 
             elif pattern_mcc_weights.match(file) and mcc_weights is None:
-                mcc_weights = file
+                mcc_weights = os.path.join(WEIGHTS_PATH, file)
 
             elif decoder_weights is not None and mcc_weights is not None:
                 decoder_current_step = int(decoder_weights[-10:-4])

@@ -1,8 +1,5 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
 -Save some results (image inference)
--Download datasets
--Create Generator (+ Resize + Crop + Preprocess input according to VGG)
--Train
 -Create video inference
 -Add comments
 -Remove pycache

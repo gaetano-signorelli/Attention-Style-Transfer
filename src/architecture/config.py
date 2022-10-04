@@ -19,6 +19,9 @@ LR_DECAY = 5e-5
 TRAIN_STEPS = 160000
 BATCH_SIZE = 8
 
+IMAGE_RESIZE = (512,512)
+IMAGE_CROP = (256,256)
+
 #Saving/Loading
 SAVE_MODEL = True
 LOAD_MODEL = True
@@ -28,3 +31,6 @@ STEPS_BEFORE_SAVE = 10000
 WEIGHTS_PATH = os.path.join("weights",BACKBONE_TYPE)
 DECODER_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"decoder_{}.npy")
 MCC_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"mcc_{}.npy")
+
+CONTENT_TRAIN_PATH = os.path.join("data","coco dataset")
+STYLE_TRAIN_PATH = os.path.join("data","wikiart dataset")

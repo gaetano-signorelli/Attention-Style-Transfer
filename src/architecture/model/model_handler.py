@@ -40,6 +40,7 @@ class ModelHandler:
                 self.load_weights(decoder_weights_path, mcc_weights_path)
                 if self.verbose:
                     print("Weights loaded")
+                    print("Restored backup from step {}".format(current_step))
 
             elif self.verbose:
                 print("WARNING: Weights not found: initializing model with random weights")

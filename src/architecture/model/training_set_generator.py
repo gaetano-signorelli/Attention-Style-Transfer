@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 from src.architecture.autoencoder.backbones import Backbones
+from src.utils.image_processing import load_preprocess_image
 
 from src.architecture.config import *
 
@@ -38,41 +39,8 @@ class Generator(keras.utils.Sequence):
         numpy_images = []
 
         for image in selected_images:
-            numpy_images.append(self.load_preprocess_image(image))
+            numpy_images.append(load_preprocess_image(image, self.backbone_type, IMAGE_RESIZE, IMAGE_CROP))
 
         batch = np.array(numpy_images)
 
         return batch
-
-    def load_preprocess_image(self, image):
-
-        pil_image = keras.preprocessing.image.load_img(image,
-                                                    target_size=IMAGE_RESIZE,
-                                                    interpolation="bilinear")
-
-        numpy_image = keras.preprocessing.image.img_to_array(pil_image)
-
-        numpy_image = self.random_crop_image(numpy_image)
-
-        numpy_image = Backbones.preprocessing_functions[self.backbone_type](numpy_image)
-        print(numpy_image)
-
-        return numpy_image
-
-    def random_crop_image(self, image):
-
-        max_rnd_h = IMAGE_RESIZE[0]-1 - IMAGE_CROP[0]
-        max_rnd_w = IMAGE_RESIZE[1]-1 - IMAGE_CROP[1]
-
-        assert max_rnd_h >= 0
-        assert max_rnd_w >= 0
-
-        random_h = random.randrange(max_rnd_h)
-        random_w = random.randrange(max_rnd_w)
-
-        cropped_image = image[random_h:random_h+IMAGE_CROP[0], random_w:random_w+IMAGE_CROP[1]]
-
-        return cropped_image
-
-    def save_partial_results(self):
-        pass

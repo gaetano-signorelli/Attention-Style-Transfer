@@ -34,3 +34,7 @@ MCC_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"mcc_{}.npy")
 
 CONTENT_TRAIN_PATH = os.path.join("data","coco dataset")
 STYLE_TRAIN_PATH = os.path.join("data","wikiart dataset")
+
+VALIDATION_CONTENT_PATH = os.path.join("data","validation images", "content.jpg")
+VALIDATION_STYLE_PATH = os.path.join("data","validation images", "style.jpg")
+VALIDATION_RESULT_PATH = os.path.join("data","validation result_{}.jpg")

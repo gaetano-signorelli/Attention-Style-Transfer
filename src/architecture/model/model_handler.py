@@ -1,10 +1,12 @@
 import os
 import re
 import numpy as np
+from PIL import Image
 from tensorflow.keras.optimizers import Adam
 
 from src.architecture.model.network import VSTNetwork
 from src.architecture.model.lr_schedule import AdaptiveLearningRate
+from src.utils.image_processing import load_preprocess_image
 
 from src.architecture.config import *
 
@@ -68,7 +70,7 @@ class ModelHandler:
                 decoder_weights = os.path.join(WEIGHTS_PATH, file)
 
             elif pattern_mcc_weights.match(file) and mcc_weights is None:
-                mcc_weights = os.path.join(WEIGHTS_PATH, file)
+                mcc_weights =
 
             elif decoder_weights is not None and mcc_weights is not None:
                 decoder_current_step = int(decoder_weights[-10:-4])
@@ -101,3 +103,17 @@ class ModelHandler:
         mcc_weights = np.load(mcc_weights_path)
 
         self.model.set_network_weights(decoder_weights, mcc_weights)
+
+    def save_validation_results(self):
+
+        validation_content = load_preprocess_image(VALIDATION_CONTENT_PATH, self.backbone_type)
+        validation_style = load_preprocess_image(VALIDATION_STYLE_PATH, self.backbone_type)
+
+        validation_content = np.array([validation_content])
+        validation_style = np.array([validation_style])
+
+        validation_result = self.model((validation_content, validation_style))
+
+        image_result = Image.fromarray(validation_result[0])
+
+        image_result.save(VALIDATION_RESULT_PATH.format(self.adapative_lr.current_step))

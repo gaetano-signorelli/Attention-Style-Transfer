@@ -9,7 +9,7 @@ class ContentLossLayer(layers.Layer):
 
         super(ContentLossLayer, self).__init__()
 
-        self.norm_layer = layers.Normalization()
+        self.norm_layer = layers.Normalization(axis=(1,2))
         self.mse_layer = MSELossLayer()
 
     @tf.function
@@ -17,8 +17,8 @@ class ContentLossLayer(layers.Layer):
 
         assert len(inputs)==2
 
-        x = inputs[1]
-        target = inputs[2]
+        x = inputs[0]
+        target = inputs[1]
 
         x = self.norm_layer(x)
         target = self.norm_layer(target)

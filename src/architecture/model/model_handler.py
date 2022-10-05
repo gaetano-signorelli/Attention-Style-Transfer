@@ -3,6 +3,7 @@ import re
 import numpy as np
 from PIL import Image
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import Input
 
 from src.architecture.model.network import VSTNetwork
 from src.architecture.model.lr_schedule import AdaptiveLearningRate
@@ -12,9 +13,10 @@ from src.architecture.config import *
 
 class ModelHandler:
 
-    def __init__(self, backbone_type, verbose=True):
+    def __init__(self, backbone_type, input_shape, verbose=True):
 
         self.backbone_type = backbone_type
+        self.input_shape = input_shape
         self.verbose = verbose
 
         self.model = None
@@ -26,7 +28,7 @@ class ModelHandler:
 
         if self.model is None:
 
-            self.model = VSTNetwork(self.backbone_type)
+            self.model = VSTNetwork(self.backbone_type, self.input_shape)
 
             self.initialize_model()
 
@@ -34,6 +36,12 @@ class ModelHandler:
                 self.model.summary()
 
     def initialize_model(self):
+
+        content_inputs = Input(shape=self.input_shape)
+        style_inputs = Input(shape=self.input_shape)
+        inputs = [content_inputs, style_inputs]
+
+        self.model(inputs)
 
         if LOAD_MODEL:
             decoder_weights_path, mcc_weights_path, current_step = self.get_weights()
@@ -49,9 +57,9 @@ class ModelHandler:
                 print("Ignore this warning if this is the first training or a test")
 
         self.adapative_lr = AdaptiveLearningRate(LEARNING_RATE, LR_DECAY, current_step)
-        self.optimizer = Adam(learning_rate=adapative_lr)
+        self.optimizer = Adam(learning_rate=self.adapative_lr)
 
-        self.model.compile(self.optimizer)
+        self.model.compile(self.optimizer, run_eagerly=RUN_EAGERLY)
 
     def get_weights(self):
 
@@ -64,24 +72,25 @@ class ModelHandler:
 
         weights_files = os.listdir(WEIGHTS_PATH).sort(reverse=True)
 
-        for file in weights_files:
+        if weights_files is not None:
+            for file in weights_files:
 
-            if pattern_decoder_weights.match(file) and decoder_weights is None:
-                decoder_weights = os.path.join(WEIGHTS_PATH, file)
+                if pattern_decoder_weights.match(file) and decoder_weights is None:
+                    decoder_weights = os.path.join(WEIGHTS_PATH, file)
 
-            elif pattern_mcc_weights.match(file) and mcc_weights is None:
-                mcc_weights =
+                elif pattern_mcc_weights.match(file) and mcc_weights is None:
+                    mcc_weights = os.path.join(WEIGHTS_PATH, file)
 
-            elif decoder_weights is not None and mcc_weights is not None:
-                decoder_current_step = int(decoder_weights[-10:-4])
-                mcc_current_step = int(mcc_weights[-10:-4])
+                elif decoder_weights is not None and mcc_weights is not None:
+                    decoder_current_step = int(decoder_weights[-10:-4])
+                    mcc_current_step = int(mcc_weights[-10:-4])
 
-                if decoder_current_step!=mcc_current_step and self.verbose:
-                    print("WARNING: Decoder and MCC layers have weights from different epochs")
+                    if decoder_current_step!=mcc_current_step and self.verbose:
+                        print("WARNING: Decoder and MCC layers have weights from different epochs")
 
-                current_step = min(decoder_current_step, mcc_current_step)
+                    current_step = min(decoder_current_step, mcc_current_step)
 
-                break
+                    break
 
         return decoder_weights, mcc_weights, current_step
 
@@ -106,13 +115,18 @@ class ModelHandler:
 
     def save_validation_results(self):
 
-        validation_content = load_preprocess_image(VALIDATION_CONTENT_PATH, self.backbone_type)
-        validation_style = load_preprocess_image(VALIDATION_STYLE_PATH, self.backbone_type)
+        validation_content = load_preprocess_image(VALIDATION_CONTENT_PATH,
+                                                self.backbone_type,
+                                                image_resize=IMAGE_CROP)
+
+        validation_style = load_preprocess_image(VALIDATION_STYLE_PATH,
+                                                self.backbone_type,
+                                                image_resize=IMAGE_CROP)
 
         validation_content = np.array([validation_content])
         validation_style = np.array([validation_style])
 
-        validation_result = self.model((validation_content, validation_style))
+        validation_result = self.model((validation_content, validation_style)).numpy()
 
         image_result = Image.fromarray(validation_result[0])
 

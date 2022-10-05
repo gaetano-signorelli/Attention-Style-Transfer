@@ -58,6 +58,14 @@ class Encoder(ABC):
 
         return checkpoint_results
 
+    def get_encoded_shape(self, x):
+
+        for layers in self.checkpoint_layers:
+            for layer in layers:
+                x = layer(x)
+
+        return x.shape
+
     @abstractmethod
     def load_model(self):
         pass

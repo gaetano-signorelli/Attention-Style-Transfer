@@ -3,29 +3,29 @@ from tensorflow.keras import layers
 
 class MultiChannelCorrelationLayer(layers.Layer):
 
-    def __init__(self, input_h, input_w, input_filters):
+    def __init__(self, encoded_shape):
 
         super(MultiChannelCorrelationLayer, self).__init__()
 
-        self.c = input_filters #Channels
-        self.w = input_w #Width
-        self.h = input_h #Height
+        self.h = encoded_shape[1] #Height
+        self.w = encoded_shape[2] #Width
+        self.c = encoded_shape[3] #Channels
 
-        self.norm_layer = layers.Normalization()
+        self.norm_layer = layers.Normalization(axis=(1,2))
 
-        self.conv_content = layers.Conv2D(input_filters, kernel_size=1)
-        self.conv_style = layers.Conv2D(input_filters, kernel_size=1)
-        self.conv_output = layers.Conv2D(input_filters, kernel_size=1)
+        self.conv_content = layers.Conv2D(self.c, kernel_size=1)
+        self.conv_style = layers.Conv2D(self.c, kernel_size=1)
+        self.conv_output = layers.Conv2D(self.c, kernel_size=1)
 
-        self.dense_layer = layers.Dense(input_filters)
+        self.dense_layer = layers.Dense(self.c)
 
     @tf.function
     def compute_covariance(self, x):
 
         x = layers.Reshape((self.w*self.h, self.c))(x) #(batch_size, W*H, C)
 
-        x_product = layers.Dot(axes=(1))([x, x]) # (batch_size, 1, C)
-        reshaped_x_product = layers.Reshape((self.c))(x_product) # (batch_size, C)
+        x_product = tf.math.square(x) #(batch_size, W*H, C)
+        x_product = tf.reduce_sum(x_product, axis=1) #(batch_size, C)
 
         x_sum = tf.math.reduce_sum(x, axis=1) #(batch_size, C)
 
@@ -55,6 +55,6 @@ class MultiChannelCorrelationLayer(layers.Layer):
         stylized_content = layers.Reshape((self.h, self.w, self.c))(stylized_content) #(batch_size, H, W, C)
 
         output = self.conv_output(stylized_content) #(batch_size, H, W, C)
-        output = layers.Add()[output, content]
+        output = layers.Add()([output, content])
 
         return output

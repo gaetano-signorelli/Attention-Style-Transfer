@@ -15,6 +15,6 @@ class GaussianNoiseLayer(layers.Layer):
 
         gaussian_noise = tf.random.normal(input_shape, mean=0.0, stddev=std)
 
-        output = layers.Add()[x, gaussian_noise]
+        output = layers.Add()([x, gaussian_noise])
 
         return output

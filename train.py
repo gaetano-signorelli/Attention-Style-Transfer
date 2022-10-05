@@ -2,7 +2,7 @@ import os
 
 from src.architecture.model.callbacks import SaveUpdateStepCallback
 from src.architecture.model.model_handler import ModelHandler
-from src.architecture.training_set_generator import Generator
+from src.architecture.model.training_set_generator import Generator
 
 from src.architecture.config import *
 
@@ -16,7 +16,9 @@ def get_filenames(path):
 
 if __name__ == '__main__':
 
-    model_handler = ModelHandler(BACKBONE_TYPE)
+    input_shape = (IMAGE_CROP[0],IMAGE_CROP[1],3)
+
+    model_handler = ModelHandler(BACKBONE_TYPE, input_shape)
     model_handler.build_model()
 
     callback = SaveUpdateStepCallback(model_handler)

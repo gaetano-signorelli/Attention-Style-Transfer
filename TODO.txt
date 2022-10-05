@@ -1,4 +1,5 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
+-Remove Run eagerly
 -Create video inference
 -Add comments
 -Remove pycache

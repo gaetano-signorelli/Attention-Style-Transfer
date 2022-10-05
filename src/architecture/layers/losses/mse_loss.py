@@ -12,8 +12,8 @@ class MSELossLayer(layers.Layer):
 
         assert len(inputs)==2
 
-        x = inputs[1]
-        target = inputs[2]
+        x = inputs[0]
+        target = inputs[1]
 
         error = x - target
         square_error = tf.math.square(error)

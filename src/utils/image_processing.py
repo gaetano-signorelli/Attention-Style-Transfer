@@ -1,3 +1,4 @@
+import random
 import numpy as np
 from tensorflow import keras
 
@@ -12,10 +13,13 @@ def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=No
     numpy_image = keras.preprocessing.image.img_to_array(pil_image)
 
     if image_crop is not None:
-        numpy_image = self.random_crop_image(numpy_image)
+        if image_resize is None:
+            image_size = numpy_image.shape
+            numpy_image = random_crop_image(numpy_image, image_size, image_crop)
+        else:
+            numpy_image = random_crop_image(numpy_image, image_resize, image_crop)
 
     numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
-    print(numpy_image)
 
     return numpy_image
 

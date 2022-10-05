@@ -16,10 +16,10 @@ class IdentityLossLayer(layers.Layer):
 
         assert len(inputs)==4
 
-        x_image = inputs[1]
-        target_image = inputs[2]
-        x_features = inputs[3]
-        target_features = inputs[4]
+        x_image = inputs[0]
+        target_image = inputs[1]
+        x_features = inputs[2]
+        target_features = inputs[3]
 
         n_features = len(x_features)
 

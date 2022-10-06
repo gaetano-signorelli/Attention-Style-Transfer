@@ -27,6 +27,7 @@ class DecoderVGG(Decoder):
         layers.UpSampling2D(size=(2, 2), interpolation="nearest"),
         layers.Conv2DTranspose(filters=64, kernel_size=3, padding="same", activation="relu"),
         layers.Conv2DTranspose(filters=3, kernel_size=3, padding="same", activation="relu"),
-    ])
+    ],
+    name = self.type + "_decoder")
 
         return model

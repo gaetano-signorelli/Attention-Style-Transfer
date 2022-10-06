@@ -5,13 +5,13 @@ from src.architecture.autoencoder.backbones import Backbones
 def build_autoencoder(type):
 
     encoder = None
-    decoder = None
+    decoder_builder = None
 
     if type == Backbones.VGG19:
         encoder = EncoderVGG()
-        decoder = DecoderVGG()
+        decoder_builder = DecoderVGG()
 
     assert encoder is not None
-    assert decoder is not None
+    assert decoder_builder is not None
 
-    return encoder, decoder
+    return encoder, decoder_builder.decoder

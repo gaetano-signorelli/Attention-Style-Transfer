@@ -128,6 +128,6 @@ class ModelHandler:
 
         validation_result = self.model((validation_content, validation_style)).numpy()
 
-        image_result = Image.fromarray(validation_result[0])
+        image_result = Image.fromarray(validation_result[0], mode="RGB")
 
         image_result.save(VALIDATION_RESULT_PATH.format(self.adapative_lr.current_step))

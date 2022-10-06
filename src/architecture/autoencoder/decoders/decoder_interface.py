@@ -9,10 +9,6 @@ class Decoder(ABC):
 
         self.decoder = self.build_model()
 
-    @tf.function
-    def decode(self, features):
-        return self.decoder(features)
-
     @abstractmethod
     def build_model(self):
         pass

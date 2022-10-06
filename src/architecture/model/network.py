@@ -31,19 +31,19 @@ class VSTNetwork(Model):
 
     def set_network_weights(self, decoder_weights, mcc_weights):
 
-        self.decoder.decoder.set_weights(decoder_weights)
+        self.decoder.set_weights(decoder_weights)
         self.mcc_layer.set_weights(mcc_weights)
 
     def get_network_weights(self):
 
-        return self.decoder.decoder.get_weights(), self.mcc_layer.get_weights()
+        return self.decoder.get_weights(), self.mcc_layer.get_weights()
 
     @tf.function
     def reconstruct_and_extract(self, encoded_content, encoded_style):
 
         mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
 
-        stylized_content = self.decoder.decode(mcc_stylized_content)
+        stylized_content = self.decoder(mcc_stylized_content)
         encoded_stylized_content_features = self.encoder.encode_with_checkpoints(stylized_content)
         encoded_stylized_content = encoded_stylized_content_features[-1]
 
@@ -54,7 +54,7 @@ class VSTNetwork(Model):
 
         mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
 
-        stylized_content = self.decoder.decode(mcc_stylized_content)
+        stylized_content = self.decoder(mcc_stylized_content)
 
         return stylized_content
 

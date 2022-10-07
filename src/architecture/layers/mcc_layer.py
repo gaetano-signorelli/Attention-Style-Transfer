@@ -15,7 +15,7 @@ class MultiChannelCorrelationLayer(layers.Layer):
 
         self.conv_content = layers.Conv2D(self.c, kernel_size=1)
         self.conv_style = layers.Conv2D(self.c, kernel_size=1)
-        self.conv_output = layers.Conv2D(self.c, kernel_size=1)
+        self.conv_output = layers.Conv2D(self.c, kernel_size=1, activation="sigmoid")
 
         self.dense_layer = layers.Dense(self.c)
 
@@ -41,17 +41,17 @@ class MultiChannelCorrelationLayer(layers.Layer):
         content = inputs[0]
         style = inputs[1]
 
-        content = self.norm_layer(content)
-        style = self.norm_layer(style)
+        content_norm = self.norm_layer(content)
+        style_norm = self.norm_layer(style)
 
-        content = self.conv_content(content) #(batch_size, H, W, C)
-        style = self.conv_style(style) #(batch_size, H, W, C)
+        content_norm = self.conv_content(content_norm) #(batch_size, H, W, C)
+        style_norm = self.conv_style(style_norm) #(batch_size, H, W, C)
 
-        style_covariance = self.compute_covariance(style) #(batch_size, C)
+        style_covariance = self.compute_covariance(style_norm) #(batch_size, C)
         style_covariance = self.dense_layer(style_covariance) #(batch_size, C)
         style_covariance = layers.Reshape((1, 1, self.c))(style_covariance) #(batch_size, 1, 1, C)
 
-        stylized_content = layers.Multiply()([content, style_covariance]) #(batch_size, H, W, C)
+        stylized_content = layers.Multiply()([content_norm, style_covariance]) #(batch_size, H, W, C)
         stylized_content = layers.Reshape((self.h, self.w, self.c))(stylized_content) #(batch_size, H, W, C)
 
         output = self.conv_output(stylized_content) #(batch_size, H, W, C)

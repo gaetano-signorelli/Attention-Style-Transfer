@@ -14,11 +14,10 @@ class StyleLossLayer(layers.Layer):
     @tf.function
     def get_mean_std(self, features):
 
-        mean = tf.math.reduce_mean(features, axis=(1,2))
-        std = tf.math.reduce_std(features, axis=(1,2))
+        mean = tf.math.reduce_mean(features, axis=(1,2), keepdims=True)
+        #std = tf.math.reduce_std(features, axis=(1,2), keepdims=True)
 
-        mean = tf.expand_dims(tf.expand_dims(mean, axis=-1), axis=-1)
-        std = tf.expand_dims(tf.expand_dims(std, axis=-1), axis=-1)
+        std = tf.math.reduce_mean(features-mean, axis=(1,2), keepdims=True)
 
         return mean, std
 

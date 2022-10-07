@@ -10,7 +10,7 @@ def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=No
                                                 target_size=image_resize,
                                                 interpolation="bilinear")
 
-    numpy_image = keras.preprocessing.image.img_to_array(pil_image)
+    numpy_image = np.array(pil_image)
 
     if image_crop is not None:
         if image_resize is None:
@@ -19,11 +19,16 @@ def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=No
         else:
             numpy_image = random_crop_image(numpy_image, image_resize, image_crop)
 
-    numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
+    #numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
+    numpy_image = numpy_image / 255.0
+    #numpy_image[:,:,[2,0]] = numpy_image[:,:,[0,2]]
 
     return numpy_image
 
 def random_crop_image(image, image_resize, image_crop):
+
+    if image_resize==image_crop:
+        return image
 
     max_rnd_h = image_resize[0]-1 - image_crop[0]
     max_rnd_w = image_resize[1]-1 - image_crop[1]

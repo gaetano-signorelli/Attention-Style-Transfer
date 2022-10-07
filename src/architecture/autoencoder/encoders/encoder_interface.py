@@ -10,15 +10,9 @@ class Encoder(ABC):
         self.type = type
 
         self.encoder = self.load_model()
-
-        self.set_untrainable()
+        self.encoder.trainable = False
 
         self.checkpoint_layers = self.split_by_checkpoints()
-
-    def set_untrainable(self):
-
-        for layer in self.encoder.layers:
-            layer.trainable = False
 
     def split_by_checkpoints(self):
 

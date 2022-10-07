@@ -43,6 +43,8 @@ class ModelHandler:
 
         self.model(inputs)
 
+        current_step = 0
+
         if LOAD_MODEL:
             decoder_weights_path, mcc_weights_path, current_step = self.get_weights()
 
@@ -57,7 +59,7 @@ class ModelHandler:
                 print("Ignore this warning if this is the first training or a test")
 
         self.adapative_lr = AdaptiveLearningRate(LEARNING_RATE, LR_DECAY, current_step)
-        self.optimizer = Adam(learning_rate=self.adapative_lr)
+        self.optimizer = Adam(learning_rate=self.adapative_lr, clipnorm=1)
 
         self.model.compile(self.optimizer, run_eagerly=RUN_EAGERLY)
 
@@ -113,13 +115,13 @@ class ModelHandler:
 
         self.model.set_network_weights(decoder_weights, mcc_weights)
 
-    def save_validation_results(self):
+    def save_validation_results(self, index):
 
         validation_content = load_preprocess_image(VALIDATION_CONTENT_PATH,
                                                 self.backbone_type,
                                                 image_resize=IMAGE_CROP)
 
-        validation_style = load_preprocess_image(VALIDATION_STYLE_PATH,
+        validation_style = load_preprocess_image(VALIDATION_STYLE_PATH.format(index),
                                                 self.backbone_type,
                                                 image_resize=IMAGE_CROP)
 
@@ -127,7 +129,9 @@ class ModelHandler:
         validation_style = np.array([validation_style])
 
         validation_result = self.model((validation_content, validation_style)).numpy()
+        validation_result = validation_result[0]*255
+        validation_result = validation_result.astype(np.uint8)
 
-        image_result = Image.fromarray(validation_result[0], mode="RGB")
+        image_result = Image.fromarray(validation_result, mode="RGB")
 
-        image_result.save(VALIDATION_RESULT_PATH.format(self.adapative_lr.current_step))
+        image_result.save(VALIDATION_RESULT_PATH.format(index, self.adapative_lr.current_step))

@@ -28,6 +28,10 @@ class VSTNetwork(Model):
         self.style_loss_layer = StyleLossLayer()
 
         self.total_loss_tracker = metrics.Mean(name="loss")
+        self.content_loss_tracker = metrics.Mean(name="con")
+        self.style_loss_tracker = metrics.Mean(name="sty")
+        self.identity_loss_tracker = metrics.Mean(name="ide")
+        self.noise_loss_tracker = metrics.Mean(name="noi")
 
     def set_network_weights(self, decoder_weights, mcc_weights):
 
@@ -44,6 +48,7 @@ class VSTNetwork(Model):
         mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
 
         stylized_content = self.decoder(mcc_stylized_content)
+
         encoded_stylized_content_features = self.encoder.encode_with_checkpoints(stylized_content)
         encoded_stylized_content = encoded_stylized_content_features[-1]
 
@@ -107,10 +112,12 @@ class VSTNetwork(Model):
         with tf.GradientTape() as tape:
             styl_cont, content_loss, style_loss, noise_loss, identity_loss = self(inputs, training=True)
 
-            total_loss = content_loss * WEIGHT_CONTENT + \
-                        style_loss * WEIGHT_STYLE + \
-                        identity_loss * WEIGHT_IDENTITY + \
-                        noise_loss * WEIGHT_NOISE
+            content_loss = content_loss * WEIGHT_CONTENT
+            style_loss = style_loss * WEIGHT_STYLE
+            identity_loss = identity_loss * WEIGHT_IDENTITY
+            noise_loss = noise_loss * WEIGHT_NOISE
+
+            total_loss = content_loss + style_loss + identity_loss + noise_loss
 
             loss = tf.math.reduce_mean(total_loss)
 
@@ -118,7 +125,15 @@ class VSTNetwork(Model):
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))
 
         self.total_loss_tracker.update_state(loss)
+        self.content_loss_tracker.update_state(content_loss)
+        self.style_loss_tracker.update_state(style_loss)
+        self.identity_loss_tracker.update_state(identity_loss)
+        self.noise_loss_tracker.update_state(noise_loss)
 
         return {
             "loss": self.total_loss_tracker.result(),
+            "content": self.content_loss_tracker.result(),
+            "style": self.style_loss_tracker.result(),
+            "identity": self.identity_loss_tracker.result(),
+            "noise": self.noise_loss_tracker.result(),
         }

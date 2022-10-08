@@ -1,6 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
+from src.architecture.layers.norm_layer import NormalizeLayer
+
 class MultiChannelCorrelationLayer(layers.Layer):
 
     def __init__(self, encoded_shape):
@@ -11,7 +13,7 @@ class MultiChannelCorrelationLayer(layers.Layer):
         self.w = encoded_shape[2] #Width
         self.c = encoded_shape[3] #Channels
 
-        self.norm_layer = layers.Normalization(axis=(1,2))
+        self.norm_layer = NormalizeLayer(axis=(1,2))
 
         self.conv_content = layers.Conv2D(self.c, kernel_size=1)
         self.conv_style = layers.Conv2D(self.c, kernel_size=1)

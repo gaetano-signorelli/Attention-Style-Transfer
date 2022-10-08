@@ -13,16 +13,20 @@ from src.architecture.config import *
 
 class ModelHandler:
 
-    def __init__(self, backbone_type, input_shape, verbose=True):
+    def __init__(self, backbone_type, input_shape, load_model=None, verbose=True):
 
         self.backbone_type = backbone_type
         self.input_shape = input_shape
+        self.load_model = load_model
         self.verbose = verbose
 
         self.model = None
 
         self.adapative_lr = None
         self.optimizer = None
+
+        if self.load_model is None:
+            self.load_model = LOAD_MODEL
 
     def build_model(self):
 

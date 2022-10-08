@@ -45,9 +45,12 @@ class VSTNetwork(Model):
     @tf.function
     def reconstruct_and_extract(self, encoded_content, encoded_style):
 
-        mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
+        if not PRETRAIN:
+            mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
+            stylized_content = self.decoder(mcc_stylized_content)
 
-        stylized_content = self.decoder(mcc_stylized_content)
+        else:
+            stylized_content = self.decoder(encoded_content)
 
         encoded_stylized_content_features = self.encoder.encode_with_checkpoints(stylized_content)
         encoded_stylized_content = encoded_stylized_content_features[-1]
@@ -57,9 +60,12 @@ class VSTNetwork(Model):
     @tf.function
     def reconstruct(self, encoded_content, encoded_style):
 
-        mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
+        if not PRETRAIN:
+            mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
+            stylized_content = self.decoder(mcc_stylized_content)
 
-        stylized_content = self.decoder(mcc_stylized_content)
+        else:
+            stylized_content = self.decoder(encoded_content)
 
         return stylized_content
 
@@ -119,7 +125,11 @@ class VSTNetwork(Model):
 
             total_loss = content_loss + style_loss + identity_loss + noise_loss
 
-            loss = tf.math.reduce_mean(total_loss)
+            if not PRETRAIN:
+                loss = tf.math.reduce_mean(total_loss)
+
+            else:
+                loss = tf.math.reduce_mean(identity_loss)
 
         grads = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))

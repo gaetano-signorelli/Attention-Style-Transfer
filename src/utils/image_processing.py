@@ -19,7 +19,8 @@ def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=No
         else:
             numpy_image = random_crop_image(numpy_image, image_resize, image_crop)
 
-    numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
+    #numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
+    numpy_image[:,:,[2,0]] = numpy_image[:,:,[0,2]]
     numpy_image = numpy_image / 255.0
 
     return numpy_image

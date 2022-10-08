@@ -20,8 +20,8 @@ class ContentLossLayer(layers.Layer):
         x = inputs[0]
         target = inputs[1]
 
-        x = self.norm_layer(x)
-        target = self.norm_layer(target)
+        #x = self.norm_layer(x)
+        #target = self.norm_layer(target)
 
         loss = self.mse_layer([x, target])
 

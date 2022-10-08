@@ -130,7 +130,11 @@ class ModelHandler:
         validation_content = np.array([validation_content])
         validation_style = np.array([validation_style])
 
-        validation_result = self.model((validation_content, validation_style)).numpy()
+        if not PRETRAIN:
+            validation_result = self.model((validation_content, validation_style)).numpy()
+        else:
+            validation_result = self.model((validation_content, validation_content)).numpy()
+
         validation_result = validation_result[0]*255
         validation_result = validation_result.astype(np.uint8)
         validation_result[:,:,[2,0]] = validation_result[:,:,[0,2]]

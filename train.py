@@ -16,6 +16,9 @@ def get_filenames(path):
 
 if __name__ == '__main__':
 
+    if PRETRAIN:
+        print("Pretraining session started")
+
     input_shape = (IMAGE_CROP[0],IMAGE_CROP[1],3)
 
     model_handler = ModelHandler(BACKBONE_TYPE, input_shape)
@@ -27,7 +30,8 @@ if __name__ == '__main__':
     style_images = get_filenames(STYLE_TRAIN_PATH)
 
     remaining_train_steps = TRAIN_STEPS - model_handler.adapative_lr.current_step
+    epochs = remaining_train_steps // EPOCH_LEN
 
-    generator = Generator(content_images, style_images, remaining_train_steps, BATCH_SIZE, BACKBONE_TYPE)
+    generator = Generator(content_images, style_images, BATCH_SIZE, BACKBONE_TYPE)
 
-    model_handler.model.fit(generator, callbacks=[callback])
+    model_handler.model.fit(generator, callbacks=[callback], epochs=epochs)

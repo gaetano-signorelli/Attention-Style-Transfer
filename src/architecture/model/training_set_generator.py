@@ -10,11 +10,10 @@ from src.architecture.config import *
 
 class Generator(keras.utils.Sequence):
 
-    def __init__(self, content_images, style_images, train_steps, batch_size, backbone_type):
+    def __init__(self, content_images, style_images, batch_size, backbone_type):
 
         self.content_images = content_images
         self.style_images = style_images
-        self.train_steps = train_steps
         self.batch_size = batch_size
         self.backbone_type = backbone_type
 
@@ -30,7 +29,7 @@ class Generator(keras.utils.Sequence):
 
     def __len__(self):
 
-        return self.train_steps
+        return EPOCH_LEN
 
     def get_random_batch(self, images):
 

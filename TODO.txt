@@ -1,8 +1,6 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
 -Solve batch end too slow
 -Make work in run_eagerly=False
--Make save weights work
--Make load weights work
 -Update .gitignore for only datasets
 -Solve memory issue
 -Check and test entire pipeline

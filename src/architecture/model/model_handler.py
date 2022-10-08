@@ -72,7 +72,8 @@ class ModelHandler:
         pattern_decoder_weights = re.compile("decoder_\d+.npy")
         pattern_mcc_weights = re.compile("mcc_\d+.npy")
 
-        weights_files = os.listdir(WEIGHTS_PATH).sort(reverse=True)
+        weights_files = os.listdir(WEIGHTS_PATH)
+        weights_files.sort(reverse=True)
 
         if weights_files is not None:
             for file in weights_files:
@@ -83,7 +84,7 @@ class ModelHandler:
                 elif pattern_mcc_weights.match(file) and mcc_weights is None:
                     mcc_weights = os.path.join(WEIGHTS_PATH, file)
 
-                elif decoder_weights is not None and mcc_weights is not None:
+                if decoder_weights is not None and mcc_weights is not None:
                     decoder_current_step = int(decoder_weights[-10:-4])
                     mcc_current_step = int(mcc_weights[-10:-4])
 
@@ -106,12 +107,13 @@ class ModelHandler:
         np.save(MCC_WEIGHTS_PATH.format(current_step), mcc_weights)
 
         if self.verbose:
+            print()
             print("Weights saved")
 
     def load_weights(self, decoder_weights_path, mcc_weights_path):
 
-        decoder_weights = np.load(decoder_weights_path)
-        mcc_weights = np.load(mcc_weights_path)
+        decoder_weights = np.load(decoder_weights_path, allow_pickle=True)
+        mcc_weights = np.load(mcc_weights_path, allow_pickle=True)
 
         self.model.set_network_weights(decoder_weights, mcc_weights)
 
@@ -131,6 +133,7 @@ class ModelHandler:
         validation_result = self.model((validation_content, validation_style)).numpy()
         validation_result = validation_result[0]*255
         validation_result = validation_result.astype(np.uint8)
+        validation_result[:,:,[2,0]] = validation_result[:,:,[0,2]]
 
         image_result = Image.fromarray(validation_result, mode="RGB")
 

@@ -19,6 +19,9 @@ class SaveUpdateStepCallback(Callback):
         self.model_handler.adapative_lr.update_current_step()
 
         if (batch+1) % STEPS_BEFORE_SAVE == 0:
-            #self.model_handler.save_weights()
+
+            if SAVE_MODEL:
+                self.model_handler.save_weights()
+                
             self.model_handler.save_validation_results(1)
             self.model_handler.save_validation_results(2)

@@ -15,7 +15,7 @@ class MultiChannelCorrelationLayer(layers.Layer):
 
         self.conv_content = layers.Conv2D(self.c, kernel_size=1)
         self.conv_style = layers.Conv2D(self.c, kernel_size=1)
-        self.conv_output = layers.Conv2D(self.c, kernel_size=1, activation="sigmoid")
+        self.conv_output = layers.Conv2D(self.c, kernel_size=1)
 
         self.dense_layer = layers.Dense(self.c)
 

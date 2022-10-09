@@ -22,12 +22,12 @@ TRAIN_STEPS = 1000 #160000
 BATCH_SIZE = 8
 EPOCH_LEN = 100
 
-IMAGE_RESIZE = (512,512) #(512,512)
+IMAGE_RESIZE = (256,256) #(512,512)
 IMAGE_CROP = (256,256) #(256,256)
 
 #Saving/Loading
-SAVE_MODEL = True
-LOAD_MODEL = True
+SAVE_MODEL = False
+LOAD_MODEL = False
 STEPS_BEFORE_SAVE = 100 #10000
 
 #Paths
@@ -36,8 +36,8 @@ DECODER_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"decoder_{}.npy")
 MCC_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"mcc_{}.npy")
 
 CONTENT_TRAIN_PATH = os.path.join("data","coco dataset")
-#STYLE_TRAIN_PATH = os.path.join("data","wikiart dataset")
-STYLE_TRAIN_PATH = os.path.join("data","pretrain")
+STYLE_TRAIN_PATH = os.path.join("data","wikiart dataset")
+#STYLE_TRAIN_PATH = os.path.join("data","pretrain")
 
 VALIDATION_CONTENT_PATH = os.path.join("data","validation images", "content.jpg")
 VALIDATION_STYLE_PATH = os.path.join("data","validation images", "style_{}.jpg")

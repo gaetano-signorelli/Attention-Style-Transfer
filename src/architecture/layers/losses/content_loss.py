@@ -9,7 +9,6 @@ class ContentLossLayer(layers.Layer):
 
         super(ContentLossLayer, self).__init__()
 
-        #self.norm_layer = layers.Normalization(axis=(1,2))
         self.norm_layer = layers.LayerNormalization()
         self.mse_layer = MSELossLayer()
 

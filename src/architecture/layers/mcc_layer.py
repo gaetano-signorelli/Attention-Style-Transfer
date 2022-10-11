@@ -11,7 +11,6 @@ class MultiChannelCorrelationLayer(layers.Layer):
         self.w = encoded_shape[2] #Width
         self.c = encoded_shape[3] #Channels
 
-        #self.norm_layer = layers.Normalization(axis=(1,2))
         self.norm_layer = layers.LayerNormalization()
 
         self.conv_content = layers.Conv2D(self.c, kernel_size=1)
@@ -26,7 +25,7 @@ class MultiChannelCorrelationLayer(layers.Layer):
         x = layers.Reshape((self.w*self.h, self.c))(x) #(batch_size, W*H, C)
 
         x_product = tf.math.square(x) #(batch_size, W*H, C)
-        x_product = tf.reduce_sum(x_product, axis=1) #(batch_size, C)
+        x_product = tf.math.reduce_sum(x_product, axis=1) #(batch_size, C)
 
         x_sum = tf.math.reduce_sum(x, axis=1) #(batch_size, C)
 
@@ -53,7 +52,6 @@ class MultiChannelCorrelationLayer(layers.Layer):
         style_covariance = layers.Reshape((1, 1, self.c))(style_covariance) #(batch_size, 1, 1, C)
 
         stylized_content = layers.Multiply()([content_norm, style_covariance]) #(batch_size, H, W, C)
-        stylized_content = layers.Reshape((self.h, self.w, self.c))(stylized_content) #(batch_size, H, W, C)
 
         output = self.conv_output(stylized_content) #(batch_size, H, W, C)
         output = layers.Add()([output, content]) #(batch_size, H, W, C)

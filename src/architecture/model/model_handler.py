@@ -49,7 +49,7 @@ class ModelHandler:
 
         current_step = 0
 
-        if LOAD_MODEL:
+        if self.load_model:
             decoder_weights_path, mcc_weights_path, current_step = self.get_weights()
 
             if decoder_weights_path is not None and mcc_weights_path is not None:

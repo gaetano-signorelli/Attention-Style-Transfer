@@ -25,7 +25,7 @@ class VSTNetwork(Model):
 
         self.mse_loss_layer = MSELossLayer()
         self.content_loss_layer = ContentLossLayer()
-        self.style_loss_layer = StyleLossLayer()
+        self.style_loss_layer = StyleLossLayer(encoded_shape)
 
         self.total_loss_tracker = metrics.Mean(name="loss")
         self.content_loss_tracker = metrics.Mean(name="con")
@@ -119,7 +119,7 @@ class VSTNetwork(Model):
             styl_cont, content_loss, style_loss, noise_loss, identity_loss = self(inputs, training=True)
 
             content_loss = content_loss * WEIGHT_CONTENT
-            style_loss = style_loss * WEIGHT_STYLE
+            style_loss = style_loss * WEIGHTS_GRAM_STYLE if USE_GRAM_STYLE_LOSS else style_loss * WEIGHTS_STYLE
             identity_loss = identity_loss * WEIGHT_IDENTITY
             noise_loss = noise_loss * WEIGHT_NOISE
 

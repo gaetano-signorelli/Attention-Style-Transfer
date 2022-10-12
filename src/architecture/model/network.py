@@ -31,14 +31,13 @@ class VSTNetwork(Model):
         self.identity_loss_tracker = metrics.Mean(name="ide")
         self.noise_loss_tracker = metrics.Mean(name="noi")
 
-    def set_network_weights(self, decoder_weights, mcc_weights):
+    def set_network_weights(self, decoder_weights):
 
         self.decoder.set_weights(decoder_weights)
-        self.mcc_layer.set_weights(mcc_weights)
 
     def get_network_weights(self):
 
-        return self.decoder.get_weights(), self.mcc_layer.get_weights()
+        return self.decoder.get_weights()
 
     @tf.function
     def reconstruct_and_extract(self, encoded_content, encoded_styles):

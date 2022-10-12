@@ -35,7 +35,6 @@ STEPS_BEFORE_SAVE = 1000 #10000
 #Paths
 WEIGHTS_PATH = os.path.join("weights",BACKBONE_TYPE)
 DECODER_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"decoder_{}.npy")
-MCC_WEIGHTS_PATH = os.path.join(WEIGHTS_PATH,"mcc_{}.npy")
 
 CONTENT_TRAIN_PATH = os.path.join("data","coco dataset")
 STYLE_TRAIN_PATH = os.path.join("data","wikiart dataset")

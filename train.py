@@ -16,9 +16,6 @@ def get_filenames(path):
 
 if __name__ == '__main__':
 
-    if PRETRAIN:
-        print("Pretraining session started")
-
     input_shape = (IMAGE_CROP[0],IMAGE_CROP[1],3)
 
     model_handler = ModelHandler(BACKBONE_TYPE, input_shape)

@@ -13,19 +13,17 @@ from src.architecture.config import *
 
 class VSTNetwork(Model):
 
-    def __init__(self, backbone_type, input_shape):
+    def __init__(self, backbone_type, input_shape, use_multiple_mcc):
 
         super(VSTNetwork, self).__init__()
 
-        self.encoder, self.decoder = build_autoencoder(backbone_type)
-        encoded_shape = self.encoder.get_encoded_shape(Input(shape=input_shape))
+        self.encoder, self.decoder, encoded_shapes = build_autoencoder(backbone_type, input_shape, use_multiple_mcc)
 
         self.gaussian_noise_layer = GaussianNoiseLayer()
-        self.mcc_layer = MultiChannelCorrelationLayer(encoded_shape)
 
         self.mse_loss_layer = MSELossLayer()
         self.content_loss_layer = ContentLossLayer()
-        self.style_loss_layer = StyleLossLayer(encoded_shape)
+        self.style_loss_layer = StyleLossLayer(encoded_shapes[-1])
 
         self.total_loss_tracker = metrics.Mean(name="loss")
         self.content_loss_tracker = metrics.Mean(name="con")
@@ -43,14 +41,9 @@ class VSTNetwork(Model):
         return self.decoder.get_weights(), self.mcc_layer.get_weights()
 
     @tf.function
-    def reconstruct_and_extract(self, encoded_content, encoded_style):
+    def reconstruct_and_extract(self, encoded_content, encoded_styles):
 
-        if not PRETRAIN:
-            mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
-            stylized_content = self.decoder(mcc_stylized_content)
-
-        else:
-            stylized_content = self.decoder(encoded_content)
+        stylized_content = self.decoder([encoded_content, encoded_styles])
 
         encoded_stylized_content_features = self.encoder.encode_with_checkpoints(stylized_content)
         encoded_stylized_content = encoded_stylized_content_features[-1]
@@ -58,14 +51,9 @@ class VSTNetwork(Model):
         return stylized_content, encoded_stylized_content_features, encoded_stylized_content
 
     @tf.function
-    def reconstruct(self, encoded_content, encoded_style):
+    def reconstruct(self, encoded_content, encoded_styles):
 
-        if not PRETRAIN:
-            mcc_stylized_content = self.mcc_layer([encoded_content, encoded_style])
-            stylized_content = self.decoder(mcc_stylized_content)
-
-        else:
-            stylized_content = self.decoder(encoded_content)
+        stylized_content = self.decoder([encoded_content, encoded_styles])
 
         return stylized_content
 
@@ -84,7 +72,7 @@ class VSTNetwork(Model):
         encoded_style = encoded_style_features[-1]
 
         #Reconstructed image with style + content, encoded features, last encoded features
-        styl_cont, enc_styl_cont_feat, enc_styl_cont = self.reconstruct_and_extract(encoded_content, encoded_style)
+        styl_cont, enc_styl_cont_feat, enc_styl_cont = self.reconstruct_and_extract(encoded_content, encoded_style_features)
 
         if not training:
             return styl_cont
@@ -96,11 +84,11 @@ class VSTNetwork(Model):
             encoded_content_noise = encoded_content_noise_features[-1]
 
             #Reconstructed image with style + content with noise
-            styl_cont_noise = self.reconstruct(encoded_content_noise, encoded_style)
+            styl_cont_noise = self.reconstruct(encoded_content_noise, encoded_style_features)
             #Reconstructed image with content + content
-            cont_cont = self.reconstruct(encoded_content, encoded_content)
+            cont_cont = self.reconstruct(encoded_content, encoded_content_features)
             #Reconstructed image with style + style
-            styl_styl = self.reconstruct(encoded_style, encoded_style)
+            styl_styl = self.reconstruct(encoded_style, encoded_style_features)
 
             content_loss = self.content_loss_layer([encoded_content, enc_styl_cont])
             style_loss = self.style_loss_layer([enc_styl_cont_feat, encoded_style_features])
@@ -119,17 +107,13 @@ class VSTNetwork(Model):
             styl_cont, content_loss, style_loss, noise_loss, identity_loss = self(inputs, training=True)
 
             content_loss = content_loss * WEIGHT_CONTENT
-            style_loss = style_loss * WEIGHTS_GRAM_STYLE if USE_GRAM_STYLE_LOSS else style_loss * WEIGHTS_STYLE
+            style_loss = style_loss * WEIGHT_GRAM_STYLE if USE_GRAM_STYLE_LOSS else style_loss * WEIGHT_STYLE
             identity_loss = identity_loss * WEIGHT_IDENTITY
             noise_loss = noise_loss * WEIGHT_NOISE
 
             total_loss = content_loss + style_loss + identity_loss + noise_loss
 
-            if not PRETRAIN:
-                loss = tf.math.reduce_mean(total_loss)
-
-            else:
-                loss = tf.math.reduce_mean(identity_loss)
+            loss = tf.math.reduce_mean(total_loss)
 
         grads = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))

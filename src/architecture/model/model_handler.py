@@ -32,7 +32,7 @@ class ModelHandler:
 
         if self.model is None:
 
-            self.model = VSTNetwork(self.backbone_type, self.input_shape)
+            self.model = VSTNetwork(self.backbone_type, self.input_shape, USE_MULTIPLE_MCC)
 
             self.initialize_model()
 
@@ -134,10 +134,7 @@ class ModelHandler:
         validation_content = np.array([validation_content])
         validation_style = np.array([validation_style])
 
-        if not PRETRAIN:
-            validation_result = self.model((validation_content, validation_style)).numpy()
-        else:
-            validation_result = self.model((validation_content, validation_content)).numpy()
+        validation_result = self.model((validation_content, validation_style)).numpy()
 
         validation_result = validation_result[0]*255
         validation_result = validation_result.astype(np.uint8)

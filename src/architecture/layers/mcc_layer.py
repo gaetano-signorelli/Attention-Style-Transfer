@@ -56,4 +56,4 @@ class MultiChannelCorrelationLayer(layers.Layer):
         output = self.conv_output(stylized_content) #(batch_size, H, W, C)
         output = layers.Add()([output, content]) #(batch_size, H, W, C)
 
-        return output
+        return output/2

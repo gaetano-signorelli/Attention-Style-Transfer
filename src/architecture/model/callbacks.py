@@ -25,3 +25,4 @@ class SaveUpdateStepCallback(Callback):
 
             self.model_handler.save_validation_results(1)
             self.model_handler.save_validation_results(2)
+            self.model_handler.save_validation_results(3)

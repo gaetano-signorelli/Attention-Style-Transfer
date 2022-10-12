@@ -52,13 +52,20 @@ class Encoder(ABC):
 
         return checkpoint_results
 
-    def get_encoded_shape(self, x):
+    def get_encoded_shapes(self, x):
+
+        features = []
 
         for layers in self.checkpoint_layers:
+
             for layer in layers:
                 x = layer(x)
 
-        return x.shape
+            features.append(x)
+
+        shapes = [feature.shape for feature in features]
+
+        return shapes
 
     @abstractmethod
     def load_model(self):

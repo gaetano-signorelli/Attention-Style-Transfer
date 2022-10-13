@@ -14,19 +14,15 @@ class IdentityLossLayer(layers.Layer):
     @tf.function
     def call(self, inputs):
 
-        assert len(inputs)==4
+        assert len(inputs)==2
 
-        x_image = inputs[0]
-        target_image = inputs[1]
-        x_features = inputs[2]
-        target_features = inputs[3]
+        x_features = inputs[0]
+        target_features = inputs[1]
 
         n_features = len(x_features)
 
-        image_loss = self.mse_layer([x_image, target_image])
-
         features_loss = self.mse_layer([x_features[0], target_features[0]])
         for i in range(1, n_features):
-            loss += self.mse_layer([x_features[i], target_features[i]])
+            features_loss += self.mse_layer([x_features[i], target_features[i]])
 
-        return image_loss, features_loss
+        return features_loss

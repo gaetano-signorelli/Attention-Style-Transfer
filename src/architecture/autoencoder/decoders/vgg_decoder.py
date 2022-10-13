@@ -82,18 +82,18 @@ class MCCDecoder(layers.Layer):
         x = self.conv_2_1(x)
         x = self.conv_2_2(x)
         x = self.conv_2_3(x)
-        if self.mcc_2 is not None:
-            x = self.mcc_2([x, encoded_styles[-2]])
+        #if self.mcc_2 is not None:
+            #x = self.mcc_2([x, encoded_styles[-2]])
         x = self.conv_2_4(x)
         x = self.up_2(x)
         x = self.conv_3_1(x)
-        #if self.mcc_3 is not None:
-            #x = self.mcc_3([x, encoded_styles[-3]])
+        if self.mcc_3 is not None:
+            x = self.mcc_3([x, encoded_styles[-3]])
         x = self.conv_3_2(x)
         x = self.up_3(x)
         x = self.conv_4_1(x)
-        if self.mcc_4 is not None:
-            x = self.mcc_4([x, encoded_styles[-4]])
+        #if self.mcc_4 is not None:
+            #x = self.mcc_4([x, encoded_styles[-4]])
         x = self.conv_4_2(x)
 
         return x

@@ -63,7 +63,7 @@ class ModelHandler:
                 print("Ignore this warning if this is the first training or a test")
 
         self.adapative_lr = AdaptiveLearningRate(LEARNING_RATE, LR_DECAY, current_step)
-        self.optimizer = Adam(learning_rate=self.adapative_lr, clipnorm=1)
+        self.optimizer = Adam(learning_rate=self.adapative_lr)
 
         self.model.compile(self.optimizer, run_eagerly=RUN_EAGERLY)
 

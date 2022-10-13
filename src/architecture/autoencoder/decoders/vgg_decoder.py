@@ -5,6 +5,7 @@ from tensorflow.keras import layers
 from src.architecture.autoencoder.decoders.decoder_interface import Decoder
 from src.architecture.autoencoder.backbones import Backbones
 from src.architecture.layers.mcc_layer import MultiChannelCorrelationLayer
+from src.architecture.layers.injection_layer import InjectionLayer
 
 class DecoderVGG(Decoder):
 
@@ -46,21 +47,25 @@ class MCCDecoder(layers.Layer):
 
         self.encoded_shapes = encoded_shapes
 
-        self.mcc_1 = MultiChannelCorrelationLayer(encoded_shapes[-1])
+        #self.mcc_1 = MultiChannelCorrelationLayer(encoded_shapes[-1])
+        self.mcc_1 = InjectionLayer(encoded_shapes[-1])
         self.conv_1_1 = layers.Conv2DTranspose(filters=256, kernel_size=3, padding="same", activation="relu")
         self.up_1 = layers.UpSampling2D(size=(2, 2), interpolation="nearest")
         self.conv_2_1 = layers.Conv2DTranspose(filters=256, kernel_size=3, padding="same", activation="relu")
         self.conv_2_2 = layers.Conv2DTranspose(filters=256, kernel_size=3, padding="same", activation="relu")
         self.conv_2_3 = layers.Conv2DTranspose(filters=256, kernel_size=3, padding="same", activation="relu")
-        self.mcc_2 = MultiChannelCorrelationLayer(encoded_shapes[-2]) if use_multiple_mcc else None
+        #self.mcc_2 = MultiChannelCorrelationLayer(encoded_shapes[-2]) if use_multiple_mcc else None
+        self.mcc_2 = InjectionLayer(encoded_shapes[-2]) if use_multiple_mcc else None
         self.conv_2_4 = layers.Conv2DTranspose(filters=128, kernel_size=3, padding="same", activation="relu")
         self.up_2 = layers.UpSampling2D(size=(2, 2), interpolation="nearest")
         self.conv_3_1 = layers.Conv2DTranspose(filters=128, kernel_size=3, padding="same", activation="relu")
-        self.mcc_3 = MultiChannelCorrelationLayer(encoded_shapes[-3]) if use_multiple_mcc else None
+        #self.mcc_3 = MultiChannelCorrelationLayer(encoded_shapes[-3]) if use_multiple_mcc else None
+        self.mcc_3 = InjectionLayer(encoded_shapes[-3]) if use_multiple_mcc else None
         self.conv_3_2 = layers.Conv2DTranspose(filters=64, kernel_size=3, padding="same", activation="relu")
         self.up_3 = layers.UpSampling2D(size=(2, 2), interpolation="nearest")
         self.conv_4_1 = layers.Conv2DTranspose(filters=64, kernel_size=3, padding="same", activation="relu")
-        self.mcc_4 = MultiChannelCorrelationLayer(encoded_shapes[-4]) if use_multiple_mcc else None
+        #self.mcc_4 = MultiChannelCorrelationLayer(encoded_shapes[-4]) if use_multiple_mcc else None
+        self.mcc_4 = InjectionLayer(encoded_shapes[-4]) if use_multiple_mcc else None
         self.conv_4_2 = layers.Conv2DTranspose(filters=3, kernel_size=3, padding="same", activation="sigmoid")
 
     @tf.function

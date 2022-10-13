@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import layers
 
 from src.architecture.layers.losses.mse_loss import MSELossLayer
+from src.architecture.layers.normalize_layer import NormalizeLayer
 
 class ContentLossLayer(layers.Layer):
 
@@ -9,7 +10,7 @@ class ContentLossLayer(layers.Layer):
 
         super(ContentLossLayer, self).__init__()
 
-        self.norm_layer = layers.LayerNormalization()
+        self.norm_layer = NormalizeLayer()
         self.mse_layer = MSELossLayer()
 
     @tf.function

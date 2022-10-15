@@ -1,8 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import layers, metrics, Model, Input
 
-from src.architecture.layers.gaussian_noise_layer import GaussianNoiseLayer
 from src.architecture.layers.adaptive_attention_layer import AdaptiveAttentionLayer
+from src.architecture.layers.feature_combination_layer import FeatureCombinatorLayer
 from src.architecture.autoencoder.autoencoder_builder import build_autoencoder
 
 from src.architecture.layers.losses.style_loss import StyleLossLayer
@@ -20,9 +20,9 @@ class VSTNetwork(Model):
         self.encoder, self.decoder,= build_autoencoder(backbone_type, input_shape)
         encoded_shapes = self.encoder.get_encoded_shapes(Input(shape=input_shape))
 
-        self.gaussian_noise_layer = GaussianNoiseLayer()
+        self.feature_combination_layer = FeatureCombinatorLayer(encoded_shapes)
 
-        self.aat_1_layer = AdaptiveAttentionLayer(encoded_shapes[-1])
+        self.aat_1_layer = AdaptiveAttentionLayer(encoded_shapes[-1], last=True)
         self.aat_2_layer = AdaptiveAttentionLayer(encoded_shapes[-2])
         self.aat_3_layer = AdaptiveAttentionLayer(encoded_shapes[-3])
 
@@ -54,9 +54,18 @@ class VSTNetwork(Model):
         encoded_content_features = self.encoder.encode_with_checkpoints(content)
         encoded_style_features = self.encoder.encode_with_checkpoints(style)
 
-        aat_1 = self.aat_1_layer([encoded_content_features[-1], encoded_style_features[-1]])
-        aat_2 = self.aat_2_layer([encoded_content_features[-2], encoded_style_features[-2]])
-        aat_3 = self.aat_3_layer([encoded_content_features[-3], encoded_style_features[-3]])
+        comb_cont_1 = self.feature_combination_layer(encoded_content_features)
+        comb_cont_2 = self.feature_combination_layer(encoded_content_features[0:-1])
+        comb_cont_3 = self.feature_combination_layer(encoded_content_features[0:-2])
+
+        comb_sty_1 = self.feature_combination_layer(encoded_style_features)
+        comb_sty_2 = self.feature_combination_layer(encoded_style_features[0:-1])
+        comb_sty_3 = self.feature_combination_layer(encoded_style_features[0:-2])
+
+
+        aat_1 = self.aat_1_layer([encoded_content_features[-1], encoded_style_features[-1], comb_cont_1, comb_sty_1])
+        aat_2 = self.aat_2_layer([encoded_content_features[-2], encoded_style_features[-2], comb_cont_2, comb_sty_2])
+        aat_3 = self.aat_3_layer([encoded_content_features[-3], encoded_style_features[-3], comb_cont_3, comb_sty_3])
 
         stylized_content = self.decoder([aat_1, aat_2, aat_3])
 
@@ -67,9 +76,14 @@ class VSTNetwork(Model):
             style_loss = self.style_loss_layer([encoded_stylized_content_features,
                                                 encoded_style_features])
 
+            c_comb_features = [comb_cont_3, comb_cont_2, comb_cont_1]
+            s_comb_features = [comb_sty_3, comb_sty_2, comb_sty_1]
+
             local_feature_loss = self.local_feature_loss_layer([encoded_stylized_content_features,
                                                                 encoded_content_features,
-                                                                encoded_style_features])
+                                                                encoded_style_features,
+                                                                c_comb_features,
+                                                                s_comb_features])
 
             content_loss = self.content_loss_layer([encoded_content_features, encoded_stylized_content_features])
 
@@ -93,7 +107,6 @@ class VSTNetwork(Model):
             content_loss = content_loss * WEIGHT_CONTENT_LOSS
 
             total_loss = style_loss + local_feature_loss
-            #total_loss = local_feature_loss
 
             loss = tf.math.reduce_mean(total_loss)
 

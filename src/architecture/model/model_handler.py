@@ -32,7 +32,7 @@ class ModelHandler:
 
         if self.model is None:
 
-            self.model = VSTNetwork(self.backbone_type, self.input_shape, USE_MULTIPLE_MCC)
+            self.model = VSTNetwork(self.backbone_type, self.input_shape)
 
             self.initialize_model()
 
@@ -119,7 +119,7 @@ class ModelHandler:
 
         validation_result = self.model((validation_content, validation_style)).numpy()
 
-        validation_result = validation_result[0]*255
+        validation_result = np.clip(validation_result[0], 0, 1) *255
         validation_result = validation_result.astype(np.uint8)
         validation_result[:,:,[2,0]] = validation_result[:,:,[0,2]]
 

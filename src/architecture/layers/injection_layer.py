@@ -27,13 +27,13 @@ class InjectionLayer(layers.Layer):
         content = inputs[0]
         style = inputs[1]
 
-        content = self.conv_content(content)
-        style = self.conv_style(style)
+        conv_content = self.conv_content(content)
+        conv_style = self.conv_style(style)
 
-        mean_style = tf.math.reduce_mean(style, axis=(1,2), keepdims=True)
-        std_style = tf.math.reduce_std(style, axis=(1,2), keepdims=True) + 1e-5
+        mean_style = tf.math.reduce_mean(conv_style, axis=(1,2), keepdims=True)
+        std_style = tf.math.reduce_std(conv_style, axis=(1,2), keepdims=True) + 1e-5
 
-        norm_content = self.norm_layer(content)
+        norm_content = self.norm_layer(conv_content)
 
         injection = (norm_content * std_style) + mean_style
 

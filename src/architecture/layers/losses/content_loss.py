@@ -10,20 +10,31 @@ class ContentLossLayer(layers.Layer):
 
         super(ContentLossLayer, self).__init__()
 
-        self.norm_layer = NormalizeLayer()
+        self.norm_layer = NormalizeLayer(axis=(1,2))
         self.mse_layer = MSELossLayer()
+
+    @tf.function
+    def content_loss(self, x, target):
+
+        #x = self.norm_layer(x)
+        #target = self.norm_layer(x)
+
+        content_loss = self.mse_layer([x, target])
+
+        return content_loss
 
     @tf.function
     def call(self, inputs):
 
         assert len(inputs)==2
 
-        x = inputs[0]
-        target = inputs[1]
+        x_features = inputs[0]
+        target_features = inputs[1]
 
-        #x = self.norm_layer(x)
-        #target = self.norm_layer(target)
+        n_features = len(x_features)
 
-        loss = self.mse_layer([x, target])
+        loss = self.content_loss(x_features[0], target_features[0])
+        for i in range(1, n_features):
+            loss += self.content_loss(x_features[i], target_features[i])
 
         return loss

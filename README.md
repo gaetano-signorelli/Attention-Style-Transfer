@@ -1,2 +1,2 @@
 # Video-Style-Transfer
-A tensorflow implementation of the paper "Arbitrary Video Style Transfer via Multi-Channel Correlation"
+A tensorflow implementation of the paper "AdaAttN: Revisit Attention Mechanism in Arbitrary Neural Style Transfer"

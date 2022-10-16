@@ -1,8 +1,6 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
--Solve batch end too slow
 -Update .gitignore for only datasets
--Solve memory issue
--Check and test entire pipeline
 -Create video inference
+-Refactor
 -Add comments
 -Remove pycache

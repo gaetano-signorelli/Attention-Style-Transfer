@@ -50,10 +50,14 @@ class ModelHandler:
         current_step = 0
 
         if self.load_model:
-            decoder_weights_path, current_step = self.get_weights()
+            decoder_weights_path, aat_1_weights_path, aat_2_weights_path, aat_3_weights_path, current_step = self.get_weights()
 
-            if decoder_weights_path is not None:
-                self.load_weights(decoder_weights_path)
+            if decoder_weights_path is not None \
+            or aat_1_weights_path is not None \
+            or aat_2_weights_path is not None \
+            or aat_3_weights_path is not None:
+
+                self.load_weights(decoder_weights_path, aat_1_weights_path, aat_2_weights_path, aat_3_weights_path)
                 if self.verbose:
                     print("Weights loaded")
                     print("Restored backup from step {}".format(current_step))
@@ -70,39 +74,74 @@ class ModelHandler:
     def get_weights(self):
 
         decoder_weights = None
+        aat_1_weights = None
+        aat_2_weights = None
+        aat_3_weights = None
         current_step = 0
 
         pattern_decoder_weights = re.compile("decoder_\d+.npy")
+        pattern_aat_1_weights = re.compile("aat_1_\d+.npy")
+        pattern_aat_2_weights = re.compile("aat_2_\d+.npy")
+        pattern_aat_3_weights = re.compile("aat_3_\d+.npy")
 
         weights_files = os.listdir(WEIGHTS_PATH)
         weights_files.sort(reverse=True)
 
         if weights_files is not None:
             for file in weights_files:
+
                 if pattern_decoder_weights.match(file) and decoder_weights is None:
                     decoder_weights = os.path.join(WEIGHTS_PATH, file)
                     current_step = int(decoder_weights[-10:-4])
+
+                elif pattern_aat_1_weights.match(file) and aat_1_weights is None:
+                    aat_1_weights = os.path.join(WEIGHTS_PATH, file)
+
+                elif pattern_aat_2_weights.match(file) and aat_2_weights is None:
+                    aat_2_weights = os.path.join(WEIGHTS_PATH, file)
+
+                elif pattern_aat_3_weights.match(file) and aat_3_weights is None:
+                    aat_3_weights = os.path.join(WEIGHTS_PATH, file)
+
+                elif decoder_weights is not None and aat_1_weights is not None \
+                and aat_2_weights is not None and aat_3_weights is not None:
                     break
 
-        return decoder_weights, current_step
+        return decoder_weights, aat_1_weights, aat_2_weights, aat_3_weights, current_step
 
     def save_weights(self):
 
-        decoder_weights = self.model.get_network_weights()
+        decoder_weights, aat_1_weights, aat_2_weights, aat_3_weights = self.model.get_network_weights()
 
         current_step = str(self.adapative_lr.current_step).zfill(6)
 
         np.save(DECODER_WEIGHTS_PATH.format(current_step), decoder_weights)
+        np.save(AAT_WEIGHTS_PATH.format(1, current_step), aat_1_weights)
+        np.save(AAT_WEIGHTS_PATH.format(2, current_step), aat_2_weights)
+        np.save(AAT_WEIGHTS_PATH.format(3, current_step), aat_3_weights)
 
         if self.verbose:
             print()
             print("Weights saved")
 
-    def load_weights(self, decoder_weights_path):
+    def load_weights(self, decoder_weights_path, aat_1_weights_path, aat_2_weights_path, aat_3_weights_path):
 
-        decoder_weights = np.load(decoder_weights_path, allow_pickle=True)
+        decoder_weights = None
+        aat_1_weights = None
+        aat_2_weights = None
+        aat_3_weights = None
 
-        self.model.set_network_weights(decoder_weights)
+        if decoder_weights_path is not None:
+            decoder_weights = np.load(decoder_weights_path, allow_pickle=True)
+
+        if aat_1_weights_path is not None:
+            aat_1_weights = np.load(aat_1_weights_path, allow_pickle=True)
+        if aat_2_weights_path is not None:
+            aat_2_weights = np.load(aat_2_weights_path, allow_pickle=True)
+        if aat_3_weights_path is not None:
+            aat_3_weights = np.load(aat_3_weights_path, allow_pickle=True)
+
+        self.model.set_network_weights(decoder_weights, aat_1_weights, aat_2_weights, aat_3_weights)
 
     def save_validation_results(self, index):
 

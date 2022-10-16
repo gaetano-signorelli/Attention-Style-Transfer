@@ -35,13 +35,28 @@ class VSTNetwork(Model):
         self.local_feature_loss_tracker = metrics.Mean(name="local feature")
         self.content_loss_tracker = metrics.Mean(name="content")
 
-    def set_network_weights(self, decoder_weights):
+    def set_network_weights(self, decoder_weights=None,
+                        aat_1_weights=None,
+                        aat_2_weights=None,
+                        aat_3_weights=None):
 
-        self.decoder.set_weights(decoder_weights)
+        if decoder_weights is not None:
+            self.decoder.set_weights(decoder_weights)
+        if aat_1_weights is not None:
+            self.aat_1_layer.set_weights(aat_1_weights)
+        if aat_2_weights is not None:
+            self.aat_2_layer.set_weights(aat_2_weights)
+        if aat_3_weights is not None:
+            self.aat_3_layer.set_weights(aat_3_weights)
 
     def get_network_weights(self):
 
-        return self.decoder.get_weights()
+        decoder_weights = self.decoder.get_weights()
+        aat_1_weights = self.aat_1_layer.get_weights()
+        aat_2_weights = self.aat_2_layer.get_weights()
+        aat_3_weights = self.aat_3_layer.get_weights()
+
+        return decoder_weights, aat_1_weights, aat_2_weights, aat_3_weights
 
     @tf.function
     def call(self, inputs, training=False):

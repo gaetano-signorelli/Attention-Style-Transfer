@@ -19,8 +19,9 @@ class StyleLossLayer(layers.Layer):
         mean = tf.math.reduce_mean(features, axis=(1,2), keepdims=True)
         #std = tf.math.reduce_std(features, axis=(1,2), keepdims=True)
 
-        diff = tf.math.abs(features-mean)
-        std = tf.math.reduce_mean(diff, axis=(1,2), keepdims=True)
+        var = tf.math.reduce_variance(features, axis=(1,2), keepdims=True)
+        var = tf.math.maximum(var, 1e-9)
+        std = tf.math.sqrt(var)
 
         return mean, std
 
@@ -47,8 +48,8 @@ class StyleLossLayer(layers.Layer):
 
         n_features = len(x_features)
 
-        loss = self.style_loss(x_features[1], target_features[1])
-        for i in range(2, n_features):
+        loss = self.style_loss(x_features[0], target_features[0])
+        for i in range(1, n_features):
             loss += self.style_loss(x_features[i], target_features[i])
 
         return loss

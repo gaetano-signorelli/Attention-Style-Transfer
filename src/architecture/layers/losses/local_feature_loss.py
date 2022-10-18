@@ -51,7 +51,7 @@ class LocalFeatureLossLayer(layers.Layer):
         K = self.permute_layer(flatten_layer_c1(norm_comb_sty)) #(B, C1, H*W)
         V_T = flatten_layer_c(style) #(B, H*W, C)
 
-        attention_product = layers.Dot(axes=(2,1),normalize=True)([Q_T, K]) #(B, H*W, H*W)
+        attention_product = layers.Dot(axes=(2,1))([Q_T, K]) #(B, H*W, H*W)
 
         A = self.softmax_layer(attention_product) #(B, H*W, H*W)
 
@@ -62,6 +62,7 @@ class LocalFeatureLossLayer(layers.Layer):
 
         S_square = layers.Dot(axes=(2,1))([A, V_T_square]) - M_square #(B, H*W, C)
         S_square = self.relu_layer(S_square) #(B, H*W, C)
+        S_square = tf.math.maximum(S_square, 1e-9)
         S = tf.math.sqrt(S_square) #(B, H*W, C)
 
         S = reshape_layer(S) #(B, H, W, C)

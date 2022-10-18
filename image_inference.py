@@ -8,9 +8,9 @@ from src.architecture.autoencoder.backbones import Backbones
 
 BACKBONE_TYPE = Backbones.VGG19
 
-CONTENT_PATH = os.path.join("data","test","content.jpg")
-STYLE_PATH = os.path.join("data","test","style.jpg")
-RESULT_PATH = os.path.join("data","test","result.jpg")
+CONTENT_PATH = os.path.join("data","test","content_3.jpg")
+STYLE_PATH = os.path.join("data","test","style_6.jpg")
+RESULT_PATH = os.path.join("data","test","test result_3_6.jpg")
 
 SIZE = (512,512)
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     result = model_handler.model((inference_content, inference_style)).numpy()
 
-    result = result[0]*255
+    result = np.clip(result[0], 0, 1) *255
     result = result.astype(np.uint8)
     result[:,:,[2,0]] = result[:,:,[0,2]]
 

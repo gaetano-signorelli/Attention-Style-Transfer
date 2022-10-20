@@ -21,7 +21,7 @@ def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=No
 
     #numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
     numpy_image[:,:,[2,0]] = numpy_image[:,:,[0,2]]
-    numpy_image = numpy_image / 255.0
+    numpy_image = numpy_image / 1.0
 
     return numpy_image
 
@@ -42,3 +42,12 @@ def random_crop_image(image, image_resize, image_crop):
     cropped_image = image[random_h:random_h+image_crop[0], random_w:random_w+image_crop[1]]
 
     return cropped_image
+
+def interpolate_images(original, target, interpolation_level):
+
+    assert interpolation_level<=1.0 and interpolation_level>=0.0
+
+    scaled_original = original * (1-interpolation_level)
+    scaled_target = target * interpolation_level
+
+    return scaled_original + scaled_target

@@ -1,3 +1,8 @@
+'''
+The Generator class is defined in order to provide the training loop with random
+samples (both contents and styles), already preprocessed.
+'''
+
 import random
 import numpy as np
 import tensorflow as tf
@@ -33,10 +38,12 @@ class Generator(keras.utils.Sequence):
 
     def get_random_batch(self, images):
 
+        #Choose randomly a number of images (according to the batch size) from dataset's folder
         selected_images = random.sample(images, self.batch_size)
 
         numpy_images = []
 
+        #Preprocess all images in the batch
         for image in selected_images:
             numpy_images.append(load_preprocess_image(image, self.backbone_type, IMAGE_RESIZE, IMAGE_CROP))
 

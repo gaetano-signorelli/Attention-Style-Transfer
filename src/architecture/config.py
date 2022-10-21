@@ -1,3 +1,8 @@
+'''
+This module contains all the constants and the parameters used at training time.
+Set the new values before starting a new training session, if required.
+'''
+
 import os
 
 from src.architecture.autoencoder.backbones import Backbones

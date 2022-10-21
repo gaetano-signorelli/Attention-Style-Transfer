@@ -1,3 +1,8 @@
+'''
+This module is responsible for handling the model: its creation, the initialization,
+saving and loading weights ecc.
+'''
+
 import os
 import re
 import numpy as np
@@ -77,6 +82,10 @@ class ModelHandler:
 
     def get_weights(self):
 
+        '''
+        Retrieve last saved weights and last training step
+        '''
+
         decoder_weights = None
         aat_1_weights = None
         aat_2_weights = None
@@ -149,6 +158,11 @@ class ModelHandler:
 
     def save_validation_results(self, index):
 
+        '''
+        This method keeps track of the performance of the network, by producing
+        stylized contents from a small validation set.
+        '''
+
         validation_content = load_preprocess_image(VALIDATION_CONTENT_PATH,
                                                 self.backbone_type,
                                                 image_resize=IMAGE_CROP)
@@ -162,9 +176,9 @@ class ModelHandler:
 
         validation_result = self.model((validation_content, validation_style)).numpy()
 
-        validation_result = np.clip(validation_result[0], 0, 255)
-        validation_result = validation_result.astype(np.uint8)
-        validation_result[:,:,[2,0]] = validation_result[:,:,[0,2]]
+        validation_result = np.clip(validation_result[0], 0, 255) #Scale in range 0-255
+        validation_result = validation_result.astype(np.uint8) #Cast to int
+        validation_result[:,:,[2,0]] = validation_result[:,:,[0,2]] #Move from BGR to RGB
 
         image_result = Image.fromarray(validation_result, mode="RGB")
 

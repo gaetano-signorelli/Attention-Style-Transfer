@@ -1,3 +1,7 @@
+'''
+Backbones serves as a container for attributes of possible decoders.
+'''
+
 from tensorflow import keras
 
 class Backbones:

@@ -1,3 +1,7 @@
+'''
+Encoder based on the pretrained VGG19 network.
+'''
+
 import tensorflow as tf
 
 from src.architecture.autoencoder.encoders.encoder_interface import Encoder

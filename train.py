@@ -1,3 +1,7 @@
+'''
+This script runs a train session.
+'''
+
 import os
 
 from src.architecture.model.callbacks import SaveUpdateStepCallback
@@ -18,11 +22,13 @@ if __name__ == '__main__':
 
     input_shape = (IMAGE_CROP[0],IMAGE_CROP[1],3)
 
+    #Load model
     model_handler = ModelHandler(BACKBONE_TYPE, input_shape)
     model_handler.build_model()
 
     callback = SaveUpdateStepCallback(model_handler)
 
+    #Load datasets
     content_images = get_filenames(CONTENT_TRAIN_PATH)
     style_images = get_filenames(STYLE_TRAIN_PATH)
 
@@ -31,4 +37,5 @@ if __name__ == '__main__':
 
     generator = Generator(content_images, style_images, BATCH_SIZE, BACKBONE_TYPE)
 
+    #Run the training
     model_handler.model.fit(generator, callbacks=[callback], epochs=epochs)

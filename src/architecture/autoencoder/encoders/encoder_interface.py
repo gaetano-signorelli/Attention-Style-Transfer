@@ -1,3 +1,7 @@
+'''
+Interface for a valid encoder.
+'''
+
 from abc import ABC, abstractmethod
 import tensorflow as tf
 
@@ -15,6 +19,10 @@ class Encoder(ABC):
         self.checkpoint_layers = self.split_by_checkpoints()
 
     def split_by_checkpoints(self):
+
+        '''
+        Divide encoder in groups of layers (to extract features from different levels)
+        '''
 
         checkpoint_layers = []
 
@@ -41,6 +49,10 @@ class Encoder(ABC):
     @tf.function
     def encode_with_checkpoints(self, x):
 
+        '''
+        Encode an input returning all the intermediate features
+        '''
+
         checkpoint_results = []
 
         for layers in self.checkpoint_layers:
@@ -53,6 +65,10 @@ class Encoder(ABC):
         return checkpoint_results
 
     def get_encoded_shapes(self, x):
+
+        '''
+        Get the shape of all the extracted (final or intermediate) features
+        '''
 
         features = []
 
@@ -69,4 +85,5 @@ class Encoder(ABC):
 
     @abstractmethod
     def load_model(self):
+        #Choose/Build the encoder's architecture
         pass

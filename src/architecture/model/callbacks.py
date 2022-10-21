@@ -1,3 +1,7 @@
+'''
+This module is a container for all the callbacks class called by the network.
+'''
+
 import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
 
@@ -15,6 +19,11 @@ class SaveUpdateStepCallback(Callback):
         self.model_handler = model_handler
 
     def on_train_batch_end(self, batch, logs=None):
+
+        '''
+        Update current step in learning rate schedule and save weights and compute
+        validation images after the specified number of steps.
+        '''
 
         self.model_handler.adapative_lr.update_current_step()
 

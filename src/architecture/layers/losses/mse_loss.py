@@ -1,3 +1,7 @@
+'''
+This layers computes the mean squared error between two images.
+'''
+
 import tensorflow as tf
 from tensorflow.keras import layers
 

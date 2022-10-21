@@ -1,3 +1,8 @@
+'''
+This layers combines features coming from different encoding levels.
+Higher level features are down-sampled and then concatenated with the others.
+'''
+
 import tensorflow as tf
 from tensorflow.keras import layers
 

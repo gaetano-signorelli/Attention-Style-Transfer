@@ -1,3 +1,8 @@
+'''
+The following layer is the implementation of the adaptive attention mechanism
+described in the official paper.
+'''
+
 import tensorflow as tf
 from tensorflow.keras import layers
 
@@ -64,7 +69,7 @@ class AdaptiveAttentionLayer(layers.Layer):
 
         S_square = layers.Dot(axes=(2,1))([A, V_T_square]) - M_square #(B, H*W, C)
         S_square = self.relu_layer(S_square) #(B, H*W, C)
-        S_square = tf.math.maximum(S_square, 1e-9)
+        S_square = tf.math.maximum(S_square, 1e-9) #Necessary to avoid Nan by computing sqrt of small values
         S = tf.math.sqrt(S_square) #(B, H*W, C)
 
         S = layers.Reshape((self.h, self.w, self.c))(S) #(B, H, W, C)

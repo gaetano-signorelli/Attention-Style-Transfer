@@ -1,3 +1,7 @@
+'''
+This script applies the transfer of a style into a content image.
+'''
+
 import os
 from PIL import Image
 import tensorflow as tf
@@ -8,7 +12,7 @@ from src.architecture.model.model_handler import ModelHandler
 from src.utils.image_processing import load_preprocess_image, interpolate_images
 from src.architecture.autoencoder.backbones import Backbones
 
-BACKBONE_TYPE = Backbones.VGG19
+BACKBONE_TYPE = Backbones.VGG19 #Type of backbone to be used
 
 LOAD_WEIGHTS = True
 WEIGHTS_PATH = os.path.join("weights",BACKBONE_TYPE)
@@ -30,6 +34,7 @@ def parse_arguments():
 
 if __name__ == '__main__':
 
+    #Get parameters
     args = parse_arguments()
 
     h = args.h
@@ -47,13 +52,16 @@ if __name__ == '__main__':
 
     input_shape = (size[0],size[1],3)
 
+    #Load model
     model_handler = ModelHandler(BACKBONE_TYPE, input_shape, LOAD_WEIGHTS, WEIGHTS_PATH)
     model_handler.build_model()
 
+    #Preprocess and load content image
     inference_content = load_preprocess_image(content_path,
                                             BACKBONE_TYPE,
                                             image_resize=size)
 
+    #Preprocess and load style image
     inference_style = load_preprocess_image(style_path,
                                             BACKBONE_TYPE,
                                             image_resize=size)
@@ -61,6 +69,7 @@ if __name__ == '__main__':
     inference_content = np.array([inference_content])
     inference_style = np.array([inference_style])
 
+    #Create stylized content
     if run_on_cpu:
         with tf.device('/cpu:0'):
             result = model_handler.model((inference_content, inference_style)).numpy()
@@ -68,11 +77,12 @@ if __name__ == '__main__':
     else:
         result = model_handler.model((inference_content, inference_style)).numpy()
 
-    result = np.clip(result[0], 0, 255)
-    result = interpolate_images(inference_content[0], result, interpolation_level)
-    result = result.astype(np.uint8)
-    result[:,:,[2,0]] = result[:,:,[0,2]]
+    result = np.clip(result[0], 0, 255) #Move in range 0-255
+    result = interpolate_images(inference_content[0], result, interpolation_level) #Interpolate with content
+    result = result.astype(np.uint8) #Cast to int
+    result[:,:,[2,0]] = result[:,:,[0,2]] #Convert from BGR to RGB
 
+    #Save result
     image_result = Image.fromarray(result, mode="RGB")
 
     image_result.save(result_path)

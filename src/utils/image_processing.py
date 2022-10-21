@@ -1,3 +1,7 @@
+'''
+This module is used to preprocess images and do other manipulation on them
+'''
+
 import random
 import numpy as np
 from tensorflow import keras
@@ -6,12 +10,14 @@ from src.architecture.autoencoder.backbones import Backbones
 
 def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=None):
 
+    #Load image from file in PIL format
     pil_image = keras.preprocessing.image.load_img(image,
                                                 target_size=image_resize,
                                                 interpolation="bilinear")
 
     numpy_image = np.array(pil_image)
 
+    #Preprocess image
     if image_crop is not None:
         if image_resize is None:
             image_size = numpy_image.shape
@@ -20,8 +26,8 @@ def load_preprocess_image(image, backbone_type, image_resize=None, image_crop=No
             numpy_image = random_crop_image(numpy_image, image_resize, image_crop)
 
     #numpy_image = Backbones.preprocessing_functions[backbone_type](numpy_image)
-    numpy_image[:,:,[2,0]] = numpy_image[:,:,[0,2]]
-    numpy_image = numpy_image / 1.0
+    numpy_image[:,:,[2,0]] = numpy_image[:,:,[0,2]] #From RGB to BGR
+    numpy_image = numpy_image / 1.0 #Convert to float (keep in range 0-255)
 
     return numpy_image
 
@@ -44,6 +50,11 @@ def random_crop_image(image, image_resize, image_crop):
     return cropped_image
 
 def interpolate_images(original, target, interpolation_level):
+
+    '''
+    Take a weighted average between pixels between two images.
+    Usually a content image and its stylized version.
+    '''
 
     assert interpolation_level<=1.0 and interpolation_level>=0.0
 

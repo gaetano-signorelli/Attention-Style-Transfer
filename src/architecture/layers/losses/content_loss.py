@@ -1,3 +1,7 @@
+'''
+This layers computes the content loss between encoded features of two images
+'''
+
 import tensorflow as tf
 from tensorflow.keras import layers
 

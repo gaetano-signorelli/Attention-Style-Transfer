@@ -1,3 +1,7 @@
+'''
+This layer computes the common style loss applied for style trasnfer tasks.
+'''
+
 import tensorflow as tf
 from tensorflow.keras import layers
 
@@ -20,7 +24,7 @@ class StyleLossLayer(layers.Layer):
         #std = tf.math.reduce_std(features, axis=(1,2), keepdims=True)
 
         var = tf.math.reduce_variance(features, axis=(1,2), keepdims=True)
-        var = tf.math.maximum(var, 1e-9)
+        var = tf.math.maximum(var, 1e-9) #Necessary to avoid Nan by computing sqrt of small values
         std = tf.math.sqrt(var)
 
         return mean, std

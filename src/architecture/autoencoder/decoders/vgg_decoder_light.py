@@ -1,3 +1,8 @@
+'''
+Decoder based on the symmetric VGG19 network, using the adaptive attention features
+as described by the paper. This decoder makes use of Separable Convolutions.
+'''
+
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers

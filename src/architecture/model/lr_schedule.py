@@ -1,3 +1,7 @@
+'''
+This class defines the learning rate schedule to train the model.
+'''
+
 from tensorflow.keras.optimizers.schedules import LearningRateSchedule
 
 class AdaptiveLearningRate(LearningRateSchedule):
@@ -14,6 +18,7 @@ class AdaptiveLearningRate(LearningRateSchedule):
 
     def __call__(self, step):
 
+        #Scale the learning rate proportionally to the decay and the current training step
         new_learning_rate = self.initial_learning_rate / (1.0 + self.lr_decay * self.current_step)
 
         return new_learning_rate

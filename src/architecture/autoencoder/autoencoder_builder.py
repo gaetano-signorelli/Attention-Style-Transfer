@@ -1,3 +1,7 @@
+'''
+This is used to build the autoencoder structure based on the selected backbone.
+'''
+
 from tensorflow.keras import Input
 
 from src.architecture.autoencoder.encoders.vgg_encoder import EncoderVGG

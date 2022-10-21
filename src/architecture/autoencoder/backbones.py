@@ -14,8 +14,3 @@ class Backbones:
     VGG19: keras.applications.vgg19.preprocess_input,
     VGG19_LIGHT: keras.applications.vgg19.preprocess_input
     }
-
-    separable = {
-    VGG19: False,
-    VGG19_LIGHT: False
-    }

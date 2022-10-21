@@ -1,4 +1,3 @@
--(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
--Update .gitignore to include weights
--Refactor
 -Add comments
+-Edit README
+-Delete this

@@ -1,4 +1,10 @@
-data
-weights
+data/coco dataset
+data/wikiart dataset
+data/test
+data/validation images/*test*
+data/validation images/*result*
+
+
+weights/VGG_19_Light
 __pycache__
 *.pyc

@@ -21,13 +21,11 @@ class VSTNetwork(Model):
         self.encoder, self.decoder,= build_autoencoder(backbone_type, input_shape)
         encoded_shapes = self.encoder.get_encoded_shapes(Input(shape=input_shape))
 
-        separable = Backbones.separable[backbone_type]
-
         self.feature_combination_layer = FeatureCombinatorLayer(encoded_shapes)
 
-        self.aat_1_layer = AdaptiveAttentionLayer(encoded_shapes[-1], separable, last=True)
-        self.aat_2_layer = AdaptiveAttentionLayer(encoded_shapes[-2], separable)
-        self.aat_3_layer = AdaptiveAttentionLayer(encoded_shapes[-3], separable)
+        self.aat_1_layer = AdaptiveAttentionLayer(encoded_shapes[-1], last=True)
+        self.aat_2_layer = AdaptiveAttentionLayer(encoded_shapes[-2])
+        self.aat_3_layer = AdaptiveAttentionLayer(encoded_shapes[-3])
 
         self.style_loss_layer = StyleLossLayer()
         self.local_feature_loss_layer = LocalFeatureLossLayer(encoded_shapes)

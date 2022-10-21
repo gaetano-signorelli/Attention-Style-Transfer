@@ -5,7 +5,7 @@ from src.architecture.layers.normalize_layer import NormalizeLayer
 
 class AdaptiveAttentionLayer(layers.Layer):
 
-    def __init__(self, encoded_shape, last=False):
+    def __init__(self, encoded_shape, separable, last=False):
 
         super(AdaptiveAttentionLayer, self).__init__()
 
@@ -23,9 +23,15 @@ class AdaptiveAttentionLayer(layers.Layer):
         self.reshape_layer_c1 = layers.Reshape((self.h*self.w, self.c1))
         self.permute_layer = layers.Permute((2,1))
 
-        self.conv_query = layers.Conv2D(self.c1, kernel_size=1)
-        self.conv_key = layers.Conv2D(self.c1, kernel_size=1)
-        self.conv_value = layers.Conv2D(self.c, kernel_size=1)
+        if not separable:
+            self.conv_query = layers.Conv2D(self.c1, kernel_size=1)
+            self.conv_key = layers.Conv2D(self.c1, kernel_size=1)
+            self.conv_value = layers.Conv2D(self.c, kernel_size=1)
+
+        else:
+            self.conv_query = layers.SeparableConv2D(self.c1, kernel_size=1)
+            self.conv_key = layers.SeparableConv2D(self.c1, kernel_size=1)
+            self.conv_value = layers.SeparableConv2D(self.c, kernel_size=1)
 
         self.softmax_layer = layers.Softmax(axis=-1)
 

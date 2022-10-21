@@ -1,6 +1,4 @@
 -(Optional) create encoder and decoder from other architectures (e.g; EfficientNet or MobileNet)
--Update .gitignore for only datasets
--Create video inference
+-Update .gitignore to include weights
 -Refactor
 -Add comments
--Remove pycache

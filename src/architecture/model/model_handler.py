@@ -13,11 +13,12 @@ from src.architecture.config import *
 
 class ModelHandler:
 
-    def __init__(self, backbone_type, input_shape, load_model=None, verbose=True):
+    def __init__(self, backbone_type, input_shape, load_model=None, weights_path=None, verbose=True):
 
         self.backbone_type = backbone_type
         self.input_shape = input_shape
         self.load_model = load_model
+        self.weights_path = weights_path
         self.verbose = verbose
 
         self.model = None
@@ -27,6 +28,9 @@ class ModelHandler:
 
         if self.load_model is None:
             self.load_model = LOAD_MODEL
+
+        if self.weights_path is None:
+            self.weights_path = WEIGHTS_PATH
 
     def build_model(self):
 
@@ -84,24 +88,24 @@ class ModelHandler:
         pattern_aat_2_weights = re.compile("aat_2_\d+.npy")
         pattern_aat_3_weights = re.compile("aat_3_\d+.npy")
 
-        weights_files = os.listdir(WEIGHTS_PATH)
+        weights_files = os.listdir(self.weights_path)
         weights_files.sort(reverse=True)
 
         if weights_files is not None:
             for file in weights_files:
 
                 if pattern_decoder_weights.match(file) and decoder_weights is None:
-                    decoder_weights = os.path.join(WEIGHTS_PATH, file)
+                    decoder_weights = os.path.join(self.weights_path, file)
                     current_step = int(decoder_weights[-10:-4])
 
                 elif pattern_aat_1_weights.match(file) and aat_1_weights is None:
-                    aat_1_weights = os.path.join(WEIGHTS_PATH, file)
+                    aat_1_weights = os.path.join(self.weights_path, file)
 
                 elif pattern_aat_2_weights.match(file) and aat_2_weights is None:
-                    aat_2_weights = os.path.join(WEIGHTS_PATH, file)
+                    aat_2_weights = os.path.join(self.weights_path, file)
 
                 elif pattern_aat_3_weights.match(file) and aat_3_weights is None:
-                    aat_3_weights = os.path.join(WEIGHTS_PATH, file)
+                    aat_3_weights = os.path.join(self.weights_path, file)
 
                 elif decoder_weights is not None and aat_1_weights is not None \
                 and aat_2_weights is not None and aat_3_weights is not None:

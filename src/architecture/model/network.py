@@ -4,6 +4,7 @@ from tensorflow.keras import layers, metrics, Model, Input
 from src.architecture.layers.adaptive_attention_layer import AdaptiveAttentionLayer
 from src.architecture.layers.feature_combination_layer import FeatureCombinatorLayer
 from src.architecture.autoencoder.autoencoder_builder import build_autoencoder
+from src.architecture.autoencoder.backbones import Backbones
 
 from src.architecture.layers.losses.style_loss import StyleLossLayer
 from src.architecture.layers.losses.content_loss import ContentLossLayer
@@ -20,11 +21,13 @@ class VSTNetwork(Model):
         self.encoder, self.decoder,= build_autoencoder(backbone_type, input_shape)
         encoded_shapes = self.encoder.get_encoded_shapes(Input(shape=input_shape))
 
+        separable = Backbones.separable[backbone_type]
+
         self.feature_combination_layer = FeatureCombinatorLayer(encoded_shapes)
 
-        self.aat_1_layer = AdaptiveAttentionLayer(encoded_shapes[-1], last=True)
-        self.aat_2_layer = AdaptiveAttentionLayer(encoded_shapes[-2])
-        self.aat_3_layer = AdaptiveAttentionLayer(encoded_shapes[-3])
+        self.aat_1_layer = AdaptiveAttentionLayer(encoded_shapes[-1], separable, last=True)
+        self.aat_2_layer = AdaptiveAttentionLayer(encoded_shapes[-2], separable)
+        self.aat_3_layer = AdaptiveAttentionLayer(encoded_shapes[-3], separable)
 
         self.style_loss_layer = StyleLossLayer()
         self.local_feature_loss_layer = LocalFeatureLossLayer(encoded_shapes)

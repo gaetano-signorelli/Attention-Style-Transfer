@@ -2,3 +2,4 @@ tensorflow
 numpy
 pillow
 opencv-python
+tqdm
